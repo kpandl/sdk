@@ -1,0 +1,8 @@
+{
+  "program": "sklearn_mlp_face_hash_1.aleo",
+  "version": "0.1.0",
+  "description": "",
+  "license": "MIT",
+  "dependencies": null,
+  "dev_dependencies": null
+}
