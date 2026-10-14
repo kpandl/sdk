@@ -1,0 +1,1792 @@
+diff --git a/rust-toolchain.toml b/rust-toolchain.toml
+index 35c8a8cb..1160006c 100644
+--- a/rust-toolchain.toml
++++ b/rust-toolchain.toml
+@@ -1,4 +1,3 @@
+ [toolchain]
+-channel = "nightly-2025-08-28"
+-components = [ "rust-std", "rust-src", "rustfmt", "clippy" ]
+-targets = [ "wasm32-unknown-unknown" ]
+\ No newline at end of file
++channel = "nightly-2026-04-02"
++components = ["rust-src", "rustfmt"]
+diff --git a/wasm/Cargo.lock b/wasm/Cargo.lock
+index 793ab85c..e760c560 100644
+--- a/wasm/Cargo.lock
++++ b/wasm/Cargo.lock
+@@ -17,14 +17,27 @@ version = "2.0.1"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "320119579fcad9c21884f5c4861d16174d0e06250625266f50fe6898340abefa"
+ 
++[[package]]
++name = "ahash"
++version = "0.8.12"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "5a15f179cd60c4584b8a8c596927aadc462e27f2ca70c04e0071964a73ba7a75"
++dependencies = [
++ "cfg-if",
++ "once_cell",
++ "version_check",
++ "zerocopy",
++]
++
+ [[package]]
+ name = "aleo-std"
+-version = "1.0.3"
++version = "1.0.4"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "869be259eeb00852087ad36e9a68c67959c2811dc8fc6c680fcac98948c4f172"
++checksum = "d7c26e03c99bac238b3454ec6c654bc066a0e4e7eae00608ec76c2279bc8f2cf"
+ dependencies = [
+  "aleo-std-cpu",
+  "aleo-std-profiler",
++ "aleo-std-storage",
+  "aleo-std-time",
+  "aleo-std-timed",
+  "aleo-std-timer",
+@@ -33,21 +46,21 @@ dependencies = [
+ 
+ [[package]]
+ name = "aleo-std-cpu"
+-version = "1.0.3"
++version = "1.0.4"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "9881417111e9266cf47bb2fec0e7ef32454fa2ac05763a48f25c1d50f260e1b9"
++checksum = "835cb3594485055c842d6a8992141aada6c290649d6d9a12c3156ec91806c209"
+ 
+ [[package]]
+ name = "aleo-std-profiler"
+-version = "1.0.3"
++version = "1.0.4"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "0d53500befe6ecd23f8fc11ccf510b680516b3a6aff08d60f12e1dda00b77787"
++checksum = "64476704cd7d71c43623839197bea87e477cfa03006853328fd5c9e07d8f48cc"
+ 
+ [[package]]
+ name = "aleo-std-storage"
+-version = "1.0.3"
++version = "1.0.4"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "46f6571ae16ee20c1e9a95b6ba685ca7156d519400f597c5e59f53b641637225"
++checksum = "67efc024835a2e9c648b300c2fac67856d3f99897e4cb02a710cdf2842ed72e9"
+ dependencies = [
+  "dirs",
+  "tempfile",
+@@ -55,9 +68,9 @@ dependencies = [
+ 
+ [[package]]
+ name = "aleo-std-time"
+-version = "1.0.3"
++version = "1.0.4"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "a9ebd144c81671193ed85aa2db9bb5e183421843e0485de8fffc07e5cf50e18a"
++checksum = "61a095fa7b4400ec1de315603c16c1084ece0b7926cbb0333a1ba115732fc35b"
+ dependencies = [
+  "proc-macro2",
+  "quote 1.0.42",
+@@ -66,9 +79,9 @@ dependencies = [
+ 
+ [[package]]
+ name = "aleo-std-timed"
+-version = "1.0.3"
++version = "1.0.4"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "68f6ff9e4c36858fa2c29e5284b77527b5a7466743976e1ba1f5824e16683545"
++checksum = "a77792a0cf06cc8efdabf5cb355a2f1e9172ae3ab5d30147ff440e1c9e8a03d0"
+ dependencies = [
+  "proc-macro2",
+  "quote 1.0.42",
+@@ -77,9 +90,9 @@ dependencies = [
+ 
+ [[package]]
+ name = "aleo-std-timer"
+-version = "1.0.3"
++version = "1.0.4"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "12aca1021aef2c476bad30d2f681e891b2be4f07dbc230a96df09cb693bfb3cb"
++checksum = "d9fbc20b310af70d896f74cdccc2f12b5d6d9cd7edea5abfd823038279703b30"
+ 
+ [[package]]
+ name = "aleo-wasm"
+@@ -223,6 +236,12 @@ version = "0.22.1"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
+ 
++[[package]]
++name = "base64"
++version = "0.23.1"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "ac07cdecf99051d9a5238b80f35af32cdeba5b336e55d957b318b50137e18da5"
++
+ [[package]]
+ name = "base64ct"
+ version = "1.8.3"
+@@ -309,18 +328,18 @@ version = "3.19.0"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "46c5e41b57b8bba42a04676d81cb89e9ee8e859a1a66f80a5a72e1cb76b34d43"
+ 
+-[[package]]
+-name = "byteorder"
+-version = "1.5.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "1fd0f2584146f6f2ef48085050886acf353beff7305ebd1ae69500e27c67f64b"
+-
+ [[package]]
+ name = "bytes"
+ version = "1.11.1"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "1e748733b7cbc798e1434b6ac524f0c1ff2ab456fe201501e6497c8417a4fc33"
+ 
++[[package]]
++name = "cast"
++version = "0.3.0"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "37b2a672a2cb129a2e41c10b1224bb368f9f37a2b16b612598138befd7b37eb5"
++
+ [[package]]
+ name = "cc"
+ version = "1.2.47"
+@@ -582,16 +601,6 @@ dependencies = [
+  "subtle",
+ ]
+ 
+-[[package]]
+-name = "der"
+-version = "0.7.10"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "e7c1832837b905bbfb5101e07cc24c8deddf52f93225eee6ead5f4d63d53ddcb"
+-dependencies = [
+- "pem-rfc7468",
+- "zeroize",
+-]
+-
+ [[package]]
+ name = "der"
+ version = "0.8.0"
+@@ -599,6 +608,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "71fd89660b2dc699704064e59e9dba0147b903e85319429e131620d022be411b"
+ dependencies = [
+  "const-oid",
++ "pem-rfc7468",
+  "zeroize",
+ ]
+ 
+@@ -637,8 +647,6 @@ dependencies = [
+ [[package]]
+ name = "dirs"
+ version = "4.0.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "ca3aa72a6f96ea37bbc5aa912f6788242832f75369bdfdadcb0e38423f100059"
+ dependencies = [
+  "dirs-sys",
+ ]
+@@ -686,7 +694,7 @@ version = "0.17.0"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "c0681a4fc24c767085329728d8dfba959af91228aa4610cca4f8ce317ba46ae0"
+ dependencies = [
+- "der 0.8.0",
++ "der",
+  "digest 0.11.3",
+  "elliptic-curve",
+  "rfc6979",
+@@ -1013,15 +1021,6 @@ dependencies = [
+  "slab",
+ ]
+ 
+-[[package]]
+-name = "fxhash"
+-version = "0.2.1"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "c31b6d751ae2c7f11320402d34e41349dd1016f8d5d45e48c4312bc8625af50c"
+-dependencies = [
+- "byteorder",
+-]
+-
+ [[package]]
+ name = "generic-array"
+ version = "0.14.9"
+@@ -1060,8 +1059,6 @@ dependencies = [
+ [[package]]
+ name = "getrandom"
+ version = "0.4.2"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "0de51e6874e94e7bf76d726fc5d13ba782deca734ff60d5bb2fb2607c7406555"
+ dependencies = [
+  "cfg-if",
+  "js-sys",
+@@ -1555,11 +1552,12 @@ dependencies = [
+ 
+ [[package]]
+ name = "js-sys"
+-version = "0.3.82"
++version = "0.3.106"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "b011eec8cc36da2aab2d5cff675ec18454fad408585853910a202391cf9f8e65"
++checksum = "7883d941dae510fb2d978fc3fe018c71c9e2892fd38854de3e8b92c2e5ad9cc5"
+ dependencies = [
+- "once_cell",
++ "cfg-if",
++ "futures-util",
+  "wasm-bindgen",
+ ]
+ 
+@@ -1595,6 +1593,12 @@ version = "0.2.177"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "2874a2af47a2325c2001a6e6fad9b16a53b802102b528163885171cf92b15976"
+ 
++[[package]]
++name = "libm"
++version = "0.2.16"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "b6d2cec3eae94f9f509c767b45932f1ada8350c4bdb85af2fcab4a3c14807981"
++
+ [[package]]
+ name = "libredox"
+ version = "0.1.10"
+@@ -1667,9 +1671,9 @@ checksum = "6877bb514081ee2a7ff5ef9de3281f14a4dd4bceac4c09388074a6b5df8a139a"
+ 
+ [[package]]
+ name = "minicov"
+-version = "0.3.7"
++version = "0.3.8"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "f27fe9f1cc3c22e1687f9446c2083c4c5fc7f0bcf1c7a86bdbded14985895b4b"
++checksum = "4869b6a491569605d66d3952bcdf03df789e5b536e5f0cf7758a7f08a55ae24d"
+ dependencies = [
+  "cc",
+  "walkdir",
+@@ -1781,6 +1785,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "071dfc062690e90b734c0b2273ce72ad0ffa95f0c74596bc250dcfd960262841"
+ dependencies = [
+  "autocfg",
++ "libm",
+ ]
+ 
+ [[package]]
+@@ -1808,6 +1813,12 @@ version = "1.21.3"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "42f5e15c9953c5e4ccceeb2e7382a716482c34515315f7b03532b8b4e8393d2d"
+ 
++[[package]]
++name = "oorandom"
++version = "11.1.5"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "d6790f58c7ff633d8771f42965289203411a5e5c68388703c06e14f24770b41e"
++
+ [[package]]
+ name = "openssl"
+ version = "0.10.80"
+@@ -1888,9 +1899,9 @@ checksum = "57c0d7b74b563b49d38dae00a0c37d4d6de9b432382b2892f0574ddcae73fd0a"
+ 
+ [[package]]
+ name = "pem-rfc7468"
+-version = "0.7.0"
++version = "1.0.0"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "88b39c9bfcfc231068454382784bb460aae594343fb030d46e9f50a645418412"
++checksum = "a6305423e0e7738146434843d1694d621cce767262b2a86910beab705e4493d9"
+ dependencies = [
+  "base64ct",
+ ]
+@@ -2159,8 +2170,6 @@ dependencies = [
+ [[package]]
+ name = "reqwest"
+ version = "0.11.27"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "dd67538700a17451e7cba03ac727fb961abb7607553461627b97de0b89cf4a62"
+ dependencies = [
+  "base64 0.21.7",
+  "bytes",
+@@ -2199,8 +2208,6 @@ dependencies = [
+ [[package]]
+ name = "reqwest"
+ version = "0.13.2"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "ab3f43e3283ab1488b624b44b0e988d0acea0b3214e694730a055cb6b2efa801"
+ dependencies = [
+  "base64 0.22.1",
+  "bytes",
+@@ -2272,15 +2279,6 @@ version = "2.1.1"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "357703d41365b4b27c590e3ed91eabb1b663f07c4c084095e60cbed4362dff0d"
+ 
+-[[package]]
+-name = "rustc_version"
+-version = "0.4.1"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "cfcb3a22ef46e85b45de6ee7e79d063319ebb6594faafcf1c225ea92ab6e9b92"
+-dependencies = [
+- "semver",
+-]
+-
+ [[package]]
+ name = "rustix"
+ version = "1.1.2"
+@@ -2424,7 +2422,7 @@ checksum = "d56d437c2f19203ce5f7122e507831de96f3d2d4d3be5af44a0b0a09d8a80e4d"
+ dependencies = [
+  "base16ct",
+  "ctutils",
+- "der 0.8.0",
++ "der",
+  "hybrid-array",
+  "subtle",
+  "zeroize",
+@@ -2610,15 +2608,13 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-algorithms"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "c605020960fd2c06f921973fcac92bec594fc2bcc7a20a17392dae9c059f3040"
++version = "4.12.0"
+ dependencies = [
++ "ahash",
+  "aleo-std",
+  "anyhow",
+  "blake2",
+  "cfg-if",
+- "fxhash",
+  "hashbrown 0.15.5",
+  "hex",
+  "indexmap",
+@@ -2638,9 +2634,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-circuit"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "94b99a80884dce9e72770fa16d71c4b3cc0e0ff3d54bcf140c29fda86961d418"
++version = "4.12.0"
+ dependencies = [
+  "snarkvm-circuit-account",
+  "snarkvm-circuit-algorithms",
+@@ -2653,9 +2647,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-circuit-account"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "2598cf3ed064568821ecc4fbdb95447c2ccf1915aae0c7ff5ee0037de27318bf"
++version = "4.12.0"
+ dependencies = [
+  "snarkvm-circuit-network",
+  "snarkvm-circuit-types",
+@@ -2664,9 +2656,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-circuit-algorithms"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "892563fe5ead3638cf08b004718216e814bfc3b7f5586af3e619235a126131cd"
++version = "4.12.0"
+ dependencies = [
+  "snarkvm-circuit-types",
+  "snarkvm-console-algorithms",
+@@ -2675,9 +2665,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-circuit-collections"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "f729b2573de7ee30fedb8d78b9d05e6846f4e829afe9f8f0e0390fb90b771007"
++version = "4.12.0"
+ dependencies = [
+  "snarkvm-circuit-algorithms",
+  "snarkvm-circuit-types",
+@@ -2686,9 +2674,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-circuit-environment"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "0b35b01a58379d03eb005d584110ce42a38f472faea3a756db9b1a917a35d8a3"
++version = "4.12.0"
+ dependencies = [
+  "anyhow",
+  "indexmap",
+@@ -2707,15 +2693,11 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-circuit-environment-witness"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "776abdace810bb9d10064c83f4d49c22c160d29206ae39182e7b91df187036fa"
++version = "4.12.0"
+ 
+ [[package]]
+ name = "snarkvm-circuit-network"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "d9bd83480f27d3d032a467b4c6ff39253e28150a2fe7cdd3a90911c55ab25612"
++version = "4.12.0"
+ dependencies = [
+  "snarkvm-circuit-algorithms",
+  "snarkvm-circuit-collections",
+@@ -2725,9 +2707,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-circuit-program"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "82c0bf9eb1121b940d88302eb936c552d8257a90620230b11e50c11ac687a914"
++version = "4.12.0"
+ dependencies = [
+  "snarkvm-circuit-account",
+  "snarkvm-circuit-algorithms",
+@@ -2740,9 +2720,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-circuit-types"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "85a7fc169b567e91f961d45786ba259214631f7f4b33b6f51805eae51db604c4"
++version = "4.12.0"
+ dependencies = [
+  "snarkvm-circuit-environment",
+  "snarkvm-circuit-types-address",
+@@ -2756,9 +2734,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-circuit-types-address"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "a52f7ff50d7e5e803cad3686e65d370af63ac3f4161bbbb44c8fddd4aefde533"
++version = "4.12.0"
+ dependencies = [
+  "snarkvm-circuit-environment",
+  "snarkvm-circuit-types-boolean",
+@@ -2770,9 +2746,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-circuit-types-boolean"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "1724845c17261565a48fa95333021392fd7754de99b10bf1c3f070f04e34415e"
++version = "4.12.0"
+ dependencies = [
+  "snarkvm-circuit-environment",
+  "snarkvm-console-types-boolean",
+@@ -2780,9 +2754,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-circuit-types-field"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "7c48a129a22841af1f5d9d0eb8f87631b42342ca46f7b715425b7695243d2c05"
++version = "4.12.0"
+ dependencies = [
+  "snarkvm-circuit-environment",
+  "snarkvm-circuit-types-boolean",
+@@ -2791,9 +2763,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-circuit-types-group"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "0b58025b820772f56c98a181e02ce1d6d1f1d7ec4417e99c1b7da44c2bd0a0a8"
++version = "4.12.0"
+ dependencies = [
+  "snarkvm-circuit-environment",
+  "snarkvm-circuit-types-boolean",
+@@ -2804,9 +2774,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-circuit-types-integers"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "629904982ec86b215d7aa0c2e2c6734174221d1016f03207016b235092373273"
++version = "4.12.0"
+ dependencies = [
+  "snarkvm-circuit-environment",
+  "snarkvm-circuit-types-boolean",
+@@ -2817,9 +2785,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-circuit-types-scalar"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "f3b293c3baa943a748cc31750f90698f7b1fa424b81b12a45824940e169286f1"
++version = "4.12.0"
+ dependencies = [
+  "snarkvm-circuit-environment",
+  "snarkvm-circuit-types-boolean",
+@@ -2829,9 +2795,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-circuit-types-string"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "167a377fe206d26847dc06923d024e6b8a498705d7fad8c702ba417aa5d4321b"
++version = "4.12.0"
+ dependencies = [
+  "snarkvm-circuit-environment",
+  "snarkvm-circuit-types-boolean",
+@@ -2842,9 +2806,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-console"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "6992b369b610f77283b724dc500c63c17ac8ca698ea885a049da25508a43d7dc"
++version = "4.12.0"
+ dependencies = [
+  "snarkvm-console-account",
+  "snarkvm-console-algorithms",
+@@ -2856,9 +2818,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-console-account"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "0f1ec666ac895bbfdc9817cd9f2f4aa54cb88022df58aed2e61ab6091dcb9acb"
++version = "4.12.0"
+ dependencies = [
+  "bs58",
+  "snarkvm-console-network",
+@@ -2868,9 +2828,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-console-algorithms"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "524a6dfc87137561d70255fe87137ba1e9fa10f3aef981e6c140155cb021a309"
++version = "4.12.0"
+ dependencies = [
+  "blake2s_simd",
+  "hex",
+@@ -2886,9 +2844,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-console-collections"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "0232bd60bbfaba4d0ba4899d6e3fd9831ab7523788637742d25e17498642bea4"
++version = "4.12.0"
+ dependencies = [
+  "aleo-std",
+  "parking_lot",
+@@ -2900,9 +2856,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-console-network"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "0255f577f91facf2f6f7b82e0259f37555a4a62d027c1ce70ef5af1c9ff6255f"
++version = "4.12.0"
+ dependencies = [
+  "anyhow",
+  "enum-iterator",
+@@ -2921,9 +2875,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-console-network-environment"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "3f45305a1a428c1277fab0ebcdb2c94535f746562be798b48090cf0524346af9"
++version = "4.12.0"
+ dependencies = [
+  "anyhow",
+  "bech32",
+@@ -2940,9 +2892,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-console-program"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "d40edbbad1e231ea27a1468c16700dc1199b56e988feb08b92791515993a8e7d"
++version = "4.12.0"
+ dependencies = [
+  "enum-iterator",
+  "enum_index",
+@@ -2962,9 +2912,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-console-types"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "46505c95db8e2f2f84fe9d3587b93def234e1f0896a543e4b4241df095008ae7"
++version = "4.12.0"
+ dependencies = [
+  "snarkvm-console-network-environment",
+  "snarkvm-console-types-address",
+@@ -2978,9 +2926,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-console-types-address"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "df528e831c8af771c9ffaabda969854aac14ce176d8980a39ddf9c11f3121c1a"
++version = "4.12.0"
+ dependencies = [
+  "snarkvm-console-network-environment",
+  "snarkvm-console-types-boolean",
+@@ -2990,18 +2936,14 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-console-types-boolean"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "45297adc35931dfb421fc450e154d93f62bda470882327bd145c78704048bd0c"
++version = "4.12.0"
+ dependencies = [
+  "snarkvm-console-network-environment",
+ ]
+ 
+ [[package]]
+ name = "snarkvm-console-types-field"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "0cca53b3ceb065a72e91641aa7678adedbc817a19ba9db2459905184c83cfcc8"
++version = "4.12.0"
+ dependencies = [
+  "smallvec",
+  "snarkvm-console-network-environment",
+@@ -3011,9 +2953,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-console-types-group"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "d9b6b4f01a789d8eb0167af3e7a9cca1893f862e137cec2ec77b13c606c2d0c0"
++version = "4.12.0"
+ dependencies = [
+  "snarkvm-console-network-environment",
+  "snarkvm-console-types-boolean",
+@@ -3023,9 +2963,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-console-types-integers"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "36c72ace9dd65e40d223c5ccf5ca967c191fd19cd006bd71c8e36721f0b5546a"
++version = "4.12.0"
+ dependencies = [
+  "snarkvm-console-network-environment",
+  "snarkvm-console-types-boolean",
+@@ -3035,9 +2973,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-console-types-scalar"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "455e278861a573234b24974df3335dc724d8078782175b42e79b9d0116456def"
++version = "4.12.0"
+ dependencies = [
+  "snarkvm-console-network-environment",
+  "snarkvm-console-types-boolean",
+@@ -3047,9 +2983,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-console-types-string"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "2637b3581c5e2791985524f0e5b78eb5cb68508fa553dc39306307258b3b686b"
++version = "4.12.0"
+ dependencies = [
+  "snarkvm-console-network-environment",
+  "snarkvm-console-types-boolean",
+@@ -3059,12 +2993,9 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-curves"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "e067c483f1a8e3450aea5577994d7a6dfd29025dc4336f4338899375db0501c1"
++version = "4.12.0"
+ dependencies = [
+  "rand",
+- "rustc_version",
+  "serde",
+  "snarkvm-fields",
+  "snarkvm-utilities",
+@@ -3073,9 +3004,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-fields"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "8e25f2ff7bb31ae6c2e8c172fa630f5e1b9caaa496c518d820e9d4bae0503e19"
++version = "4.12.0"
+ dependencies = [
+  "aleo-std",
+  "anyhow",
+@@ -3091,9 +3020,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-ledger-authority"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "2d28b82c5fe07b49191f21fb3ac397ecd02dd4b6838abf00bbe615841a2399a1"
++version = "4.12.0"
+ dependencies = [
+  "anyhow",
+  "rand",
+@@ -3104,9 +3031,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-ledger-block"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "86b3c7d57a3694f4c109b3cf0d695e4c257a01016c4361bb375fa6a91b06c65d"
++version = "4.12.0"
+ dependencies = [
+  "anyhow",
+  "indexmap",
+@@ -3129,9 +3054,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-ledger-committee"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "a6c7e7a3c6a23b5db248ebbd3abb99e53d9f886b73c5cbac6f6ab5d57e0588b9"
++version = "4.12.0"
+ dependencies = [
+  "indexmap",
+  "rayon",
+@@ -3142,9 +3065,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-ledger-narwhal-batch-certificate"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "0b334acf3f8ed707f3ce1746ac73ef95f28f4ef1bafb24c8f0f3685b6874acf9"
++version = "4.12.0"
+ dependencies = [
+  "indexmap",
+  "rayon",
+@@ -3156,9 +3077,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-ledger-narwhal-batch-header"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "4c9654ccbc21fe731ee6fe18c7104a055e10dca2a064480291d89867503d1610"
++version = "4.12.0"
+ dependencies = [
+  "indexmap",
+  "rayon",
+@@ -3169,9 +3088,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-ledger-narwhal-data"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "5161ac69974153850a3d4cc58ab919d7dbb550d96f9f9569f879a400a4ef4dd5"
++version = "4.12.0"
+ dependencies = [
+  "bytes",
+  "serde_json",
+@@ -3180,9 +3097,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-ledger-narwhal-subdag"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "da5adc331890704d7bb91698b0c4deee0773518f188e5c4f2baefbbc6f738589"
++version = "4.12.0"
+ dependencies = [
+  "indexmap",
+  "rayon",
+@@ -3196,9 +3111,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-ledger-narwhal-transmission-id"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "2326cdc6c1743434aae590f17a29344929d37ee8fd4bedbd52ac8b2151ed5fa5"
++version = "4.12.0"
+ dependencies = [
+  "snarkvm-console",
+  "snarkvm-ledger-puzzle",
+@@ -3206,9 +3119,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-ledger-puzzle"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "2b430ac8eea1255f588f198973ebfe75f637049b71e7c9b9b5dfd315f3d39e17"
++version = "4.12.0"
+ dependencies = [
+  "aleo-std",
+  "anyhow",
+@@ -3227,9 +3138,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-ledger-puzzle-epoch"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "fbaff32c5ab7f413f590732dba1c9a07656e2b13fad9ac7020b69e326b7efc86"
++version = "4.12.0"
+ dependencies = [
+  "aleo-std",
+  "anyhow",
+@@ -3250,9 +3159,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-ledger-query"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "fdc28b884ec34f6adea2f7648bdf414fad4bb5c9075b05868398306e7eb699ea"
++version = "4.12.0"
+ dependencies = [
+  "anyhow",
+  "async-trait",
+@@ -3268,9 +3175,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-ledger-store"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "0660353ec7b10ca3b7aa2bb10abdf49044ae049e4df045da11026ca4c4956d53"
++version = "4.12.0"
+ dependencies = [
+  "aleo-std-storage",
+  "anyhow",
+@@ -3294,9 +3199,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-parameters"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "9f5b831d9feb2da7ff96be1ae05d5f0e8f4018e2ef895ea14d4eee4773f528c0"
++version = "4.12.0"
+ dependencies = [
+  "aleo-std",
+  "anyhow",
+@@ -3320,9 +3223,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-synthesizer"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "6a5d5e010df257122387f535ddaf648b68ddfd555a715bf83372c9981d117a1d"
++version = "4.12.0"
+ dependencies = [
+  "aleo-std",
+  "anyhow",
+@@ -3332,6 +3233,7 @@ dependencies = [
+  "parking_lot",
+  "rand",
+  "rayon",
++ "serde",
+  "serde_json",
+  "snarkvm-algorithms",
+  "snarkvm-circuit",
+@@ -3356,9 +3258,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-synthesizer-error"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "c713e221f1a9dfb131862729ddf49f02147d14bb27a8f1f533b81c49748576d7"
++version = "4.12.0"
+ dependencies = [
+  "anyhow",
+  "snarkvm-circuit-environment",
+@@ -3369,9 +3269,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-synthesizer-process"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "4b7ae176623039b2dd3304dd645c9aa231cb310784fbbf1f08fa2a13c3304b42"
++version = "4.12.0"
+ dependencies = [
+  "aleo-std",
+  "colored",
+@@ -3396,9 +3294,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-synthesizer-program"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "ae72cc1a3b3dd05cece0635c5b73b854de3f51db10ec1c0c0e28ec61e0e0400d"
++version = "4.12.0"
+ dependencies = [
+  "enum-iterator",
+  "indexmap",
+@@ -3418,9 +3314,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-synthesizer-snark"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "ea353b8ec0cfa129f998dc4f7d553b0b27608ab715ca7bb8e569eebad8335e58"
++version = "4.12.0"
+ dependencies = [
+  "bincode",
+  "serde_json",
+@@ -3432,9 +3326,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-utilities"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "b2269d32fbd350808a0dc97f54ecbd82a12c7a81088997471e1fcafc84214e80"
++version = "4.12.0"
+ dependencies = [
+  "aleo-std",
+  "anyhow",
+@@ -3456,20 +3348,16 @@ dependencies = [
+ 
+ [[package]]
+ name = "snarkvm-utilities-derives"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "58e81d3351f48ef6692f87790298c125fc79a5a4ea99db47c8c4674560d0fe9f"
++version = "4.12.0"
+ dependencies = [
+  "proc-macro2",
+  "quote 1.0.42",
+- "syn 2.0.111",
++ "syn 3.0.9",
+ ]
+ 
+ [[package]]
+ name = "snarkvm-wasm"
+-version = "4.11.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "ce2731f79311148069aef03427f6b181ca709ad61e804e4d9bf3313267f76e1b"
++version = "4.12.0"
+ dependencies = [
+  "getrandom 0.4.2",
+  "snarkvm-console",
+@@ -3553,6 +3441,17 @@ dependencies = [
+  "unicode-ident",
+ ]
+ 
++[[package]]
++name = "syn"
++version = "3.0.9"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "d78c8dee4c7bf0e14673097256fed6142ce9d3b85a408189d07482442145823b"
++dependencies = [
++ "proc-macro2",
++ "quote 1.0.42",
++ "unicode-ident",
++]
++
+ [[package]]
+ name = "sync_wrapper"
+ version = "0.1.2"
+@@ -3923,13 +3822,13 @@ checksum = "8ecb6da28b8a351d773b68d5825ac39017e680750f980f3a1a85cd8dd28a47c1"
+ 
+ [[package]]
+ name = "ureq"
+-version = "3.1.4"
++version = "3.4.2"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "d39cb1dbab692d82a977c0392ffac19e188bd9186a9f32806f0aaa859d75585a"
++checksum = "9a7ac20be9b7726e0bbdbf974c059676d9acb1cd414961f570a4e8231cacd7fc"
+ dependencies = [
+- "base64 0.22.1",
++ "base64 0.23.1",
+  "cookie_store",
+- "der 0.7.10",
++ "der",
+  "flate2",
+  "log",
+  "native-tls",
+@@ -3939,18 +3838,18 @@ dependencies = [
+  "serde",
+  "serde_json",
+  "ureq-proto",
+- "utf-8",
++ "utf8-zero",
+  "webpki-root-certs",
+  "webpki-roots",
+ ]
+ 
+ [[package]]
+ name = "ureq-proto"
+-version = "0.5.3"
++version = "0.6.4"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "d81f9efa9df032be5934a46a068815a10a042b494b6a58cb0a1a97bb5467ed6f"
++checksum = "f86fd172ccca569e458f61b6bdd6220965a9ef36e672a6852953b51a0e1583be"
+ dependencies = [
+- "base64 0.22.1",
++ "base64 0.23.1",
+  "http 1.3.1",
+  "httparse",
+  "log",
+@@ -3969,10 +3868,10 @@ dependencies = [
+ ]
+ 
+ [[package]]
+-name = "utf-8"
+-version = "0.7.6"
++name = "utf8-zero"
++version = "0.8.1"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "09cc8ee72d2a9becf2f2febe0205bbed8fc6615b7cb429ad062dc7b7ddd036a9"
++checksum = "b8c0a043c9540bae7c578c88f91dda8bd82e59ae27c21baca69c8b191aaf5a6e"
+ 
+ [[package]]
+ name = "utf8_iter"
+@@ -4043,9 +3942,9 @@ dependencies = [
+ 
+ [[package]]
+ name = "wasm-bindgen"
+-version = "0.2.105"
++version = "0.2.129"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "da95793dfc411fbbd93f5be7715b0578ec61fe87cb1a42b12eb625caa5c5ea60"
++checksum = "9bb54f33acc68fd454578d9820b0bde1a1a3d17aa17bb7b6595806d02886d409"
+ dependencies = [
+  "cfg-if",
+  "once_cell",
+@@ -4058,22 +3957,20 @@ dependencies = [
+ 
+ [[package]]
+ name = "wasm-bindgen-futures"
+-version = "0.4.55"
++version = "0.4.79"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "551f88106c6d5e7ccc7cd9a16f312dd3b5d36ea8b4954304657d5dfba115d4a0"
++checksum = "3cbab34de2d982e9b48e18d216d04c4a6f641066ff19ffb699980f591ee3610e"
+ dependencies = [
+- "cfg-if",
+  "js-sys",
+- "once_cell",
++ "tokio",
+  "wasm-bindgen",
+- "web-sys",
+ ]
+ 
+ [[package]]
+ name = "wasm-bindgen-macro"
+-version = "0.2.105"
++version = "0.2.129"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "04264334509e04a7bf8690f2384ef5265f05143a4bff3889ab7a3269adab59c2"
++checksum = "2e29d0c35b16e224a7eeb5cd2d25e3e1968fbd65604117b44d3b789d00ee8535"
+ dependencies = [
+  "quote 1.0.42",
+  "wasm-bindgen-macro-support",
+@@ -4081,50 +3978,65 @@ dependencies = [
+ 
+ [[package]]
+ name = "wasm-bindgen-macro-support"
+-version = "0.2.105"
++version = "0.2.129"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "420bc339d9f322e562942d52e115d57e950d12d88983a14c79b86859ee6c7ebc"
++checksum = "6f501a8bc3719dba86ef8ae4728879c08001bea749eb1333ac5b91e040e2a6b7"
+ dependencies = [
+  "bumpalo",
+  "proc-macro2",
+  "quote 1.0.42",
+- "syn 2.0.111",
++ "syn 3.0.9",
+  "wasm-bindgen-shared",
+ ]
+ 
+ [[package]]
+ name = "wasm-bindgen-shared"
+-version = "0.2.105"
++version = "0.2.129"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "76f218a38c84bcb33c25ec7059b07847d465ce0e0a76b995e134a45adcb6af76"
++checksum = "23f0c9c52aa7cd7d77769a4cfe2a9adb1b331f489a41d912ce14513d5ab995c6"
+ dependencies = [
+  "unicode-ident",
+ ]
+ 
+ [[package]]
+ name = "wasm-bindgen-test"
+-version = "0.3.55"
++version = "0.3.79"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "bfc379bfb624eb59050b509c13e77b4eb53150c350db69628141abce842f2373"
++checksum = "ae7499dfd45780a0a91d7ee6bb9ac51970a4479a41a89da443fdda5a39547d42"
+ dependencies = [
++ "async-trait",
++ "cast",
+  "js-sys",
++ "libm",
+  "minicov",
++ "nu-ansi-term",
++ "num-traits",
++ "oorandom",
++ "serde",
++ "serde_json",
+  "wasm-bindgen",
+  "wasm-bindgen-futures",
+  "wasm-bindgen-test-macro",
++ "wasm-bindgen-test-shared",
+ ]
+ 
+ [[package]]
+ name = "wasm-bindgen-test-macro"
+-version = "0.3.55"
++version = "0.3.79"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "085b2df989e1e6f9620c1311df6c996e83fe16f57792b272ce1e024ac16a90f1"
++checksum = "3b84b5ac638bfb168196a1a461fcc8f46a294a18b1b6be52133b4e0db122cc9f"
+ dependencies = [
+  "proc-macro2",
+  "quote 1.0.42",
+- "syn 2.0.111",
++ "syn 3.0.9",
+ ]
+ 
++[[package]]
++name = "wasm-bindgen-test-shared"
++version = "0.2.129"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "4f692aa943ccd88363733b77063f32cfed5bc6cbea8e6e8b251b302f881606fe"
++
+ [[package]]
+ name = "wasm-encoder"
+ version = "0.244.0"
+@@ -4161,9 +4073,9 @@ dependencies = [
+ 
+ [[package]]
+ name = "web-sys"
+-version = "0.3.82"
++version = "0.3.106"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "3a1f95c0d03a47f4ae1f7a64643a6bb97465d9b740f0fa8f90ea33915c99a9a1"
++checksum = "88261b9deccee56594c11a3460c462c41f58d148598fe70ad77070126a68aba4"
+ dependencies = [
+  "js-sys",
+  "wasm-bindgen",
+@@ -4768,3 +4680,27 @@ dependencies = [
+  "quote 1.0.42",
+  "syn 2.0.111",
+ ]
++
++[[patch.unused]]
++name = "snarkvm-algorithms-cuda"
++version = "4.12.0"
++
++[[patch.unused]]
++name = "snarkvm-ledger"
++version = "4.12.0"
++
++[[patch.unused]]
++name = "snarkvm-ledger-narwhal"
++version = "4.12.0"
++
++[[patch.unused]]
++name = "snarkvm-ledger-narwhal-transmission"
++version = "4.12.0"
++
++[[patch.unused]]
++name = "snarkvm-ledger-test-helpers"
++version = "4.12.0"
++
++[[patch.unused]]
++name = "snarkvm-metrics"
++version = "4.12.0"
+diff --git a/wasm/Cargo.toml b/wasm/Cargo.toml
+index da3dd65b..6f160016 100644
+--- a/wasm/Cargo.toml
++++ b/wasm/Cargo.toml
+@@ -22,14 +22,14 @@ crate-type = [ "cdylib", "rlib" ]
+ doctest = false
+ 
+ [dependencies.snarkvm-algorithms]
+-version = "4.11.0"
++version = "=4.12.0"
+ 
+ [dependencies.snarkvm-circuit-network]
+-version = "4.11.0"
++version = "=4.12.0"
+ features = ["wasm"]
+ 
+ [dependencies.snarkvm-console]
+-version = "4.11.0"
++version = "=4.12.0"
+ default-features = false
+ features = [
+     "account",
+@@ -42,31 +42,31 @@ features = [
+ ]
+ 
+ [dependencies.snarkvm-ledger-block]
+-version = "4.11.0"
++version = "=4.12.0"
+ features = ["wasm"]
+ 
+ [dependencies.snarkvm-ledger-query]
+-version = "4.11.0"
++version = "=4.12.0"
+ features = ["async", "wasm"]
+ 
+ [dependencies.snarkvm-ledger-store]
+-version = "4.11.0"
++version = "=4.12.0"
+ 
+ [dependencies.snarkvm-parameters]
+-version = "4.11.0"
++version = "=4.12.0"
+ default-features = false
+ features = ["wasm"]
+ 
+ [dependencies.snarkvm-synthesizer-program]
+-version = "4.11.0"
++version = "=4.12.0"
+ features = ["wasm"]
+ 
+ [dependencies.snarkvm-synthesizer]
+-version = "4.11.0"
++version = "=4.12.0"
+ features = ["async", "wasm"]
+ 
+ [dependencies.snarkvm-wasm]
+-version = "4.11.0"
++version = "=4.12.0"
+ features = ["fields", "utilities"]
+ 
+ [dependencies.anyhow]
+@@ -121,7 +121,7 @@ version = "1.8"
+ features = [ "zeroize_derive" ]
+ 
+ [dependencies.wasm-bindgen]
+-version = "0.2.100"
++version = "=0.2.129"
+ features = [ "serde-serialize" ]
+ 
+ [dependencies.wasm-bindgen-futures]
+@@ -161,3 +161,74 @@ strip = true
+ opt-level = 3
+ lto = "thin"
+ incremental = true
++
++# Isolated snarkVM v4.12.0 experiment, pinned to release commit 56b6c602.
++[patch.crates-io]
++snarkvm-algorithms = { path = "../../snarkVM-proving-wasm64/algorithms" }
++snarkvm-algorithms-cuda = { path = "../../snarkVM-proving-wasm64/algorithms/cuda" }
++snarkvm-circuit = { path = "../../snarkVM-proving-wasm64/circuit" }
++snarkvm-circuit-account = { path = "../../snarkVM-proving-wasm64/circuit/account" }
++snarkvm-circuit-algorithms = { path = "../../snarkVM-proving-wasm64/circuit/algorithms" }
++snarkvm-circuit-collections = { path = "../../snarkVM-proving-wasm64/circuit/collections" }
++snarkvm-circuit-environment = { path = "../../snarkVM-proving-wasm64/circuit/environment" }
++snarkvm-circuit-environment-witness = { path = "../../snarkVM-proving-wasm64/circuit/environment/witness" }
++snarkvm-circuit-network = { path = "../../snarkVM-proving-wasm64/circuit/network" }
++snarkvm-circuit-program = { path = "../../snarkVM-proving-wasm64/circuit/program" }
++snarkvm-circuit-types = { path = "../../snarkVM-proving-wasm64/circuit/types" }
++snarkvm-circuit-types-address = { path = "../../snarkVM-proving-wasm64/circuit/types/address" }
++snarkvm-circuit-types-boolean = { path = "../../snarkVM-proving-wasm64/circuit/types/boolean" }
++snarkvm-circuit-types-field = { path = "../../snarkVM-proving-wasm64/circuit/types/field" }
++snarkvm-circuit-types-group = { path = "../../snarkVM-proving-wasm64/circuit/types/group" }
++snarkvm-circuit-types-integers = { path = "../../snarkVM-proving-wasm64/circuit/types/integers" }
++snarkvm-circuit-types-scalar = { path = "../../snarkVM-proving-wasm64/circuit/types/scalar" }
++snarkvm-circuit-types-string = { path = "../../snarkVM-proving-wasm64/circuit/types/string" }
++snarkvm-console = { path = "../../snarkVM-proving-wasm64/console" }
++snarkvm-console-account = { path = "../../snarkVM-proving-wasm64/console/account" }
++snarkvm-console-algorithms = { path = "../../snarkVM-proving-wasm64/console/algorithms" }
++snarkvm-console-collections = { path = "../../snarkVM-proving-wasm64/console/collections" }
++snarkvm-console-network = { path = "../../snarkVM-proving-wasm64/console/network" }
++snarkvm-console-network-environment = { path = "../../snarkVM-proving-wasm64/console/network/environment" }
++snarkvm-console-program = { path = "../../snarkVM-proving-wasm64/console/program" }
++snarkvm-console-types = { path = "../../snarkVM-proving-wasm64/console/types" }
++snarkvm-console-types-address = { path = "../../snarkVM-proving-wasm64/console/types/address" }
++snarkvm-console-types-boolean = { path = "../../snarkVM-proving-wasm64/console/types/boolean" }
++snarkvm-console-types-field = { path = "../../snarkVM-proving-wasm64/console/types/field" }
++snarkvm-console-types-group = { path = "../../snarkVM-proving-wasm64/console/types/group" }
++snarkvm-console-types-integers = { path = "../../snarkVM-proving-wasm64/console/types/integers" }
++snarkvm-console-types-scalar = { path = "../../snarkVM-proving-wasm64/console/types/scalar" }
++snarkvm-console-types-string = { path = "../../snarkVM-proving-wasm64/console/types/string" }
++snarkvm-curves = { path = "../../snarkVM-proving-wasm64/curves" }
++snarkvm-fields = { path = "../../snarkVM-proving-wasm64/fields" }
++snarkvm-ledger = { path = "../../snarkVM-proving-wasm64/ledger" }
++snarkvm-ledger-authority = { path = "../../snarkVM-proving-wasm64/ledger/authority" }
++snarkvm-ledger-block = { path = "../../snarkVM-proving-wasm64/ledger/block" }
++snarkvm-ledger-committee = { path = "../../snarkVM-proving-wasm64/ledger/committee" }
++snarkvm-ledger-narwhal = { path = "../../snarkVM-proving-wasm64/ledger/narwhal" }
++snarkvm-ledger-narwhal-batch-certificate = { path = "../../snarkVM-proving-wasm64/ledger/narwhal/batch-certificate" }
++snarkvm-ledger-narwhal-batch-header = { path = "../../snarkVM-proving-wasm64/ledger/narwhal/batch-header" }
++snarkvm-ledger-narwhal-data = { path = "../../snarkVM-proving-wasm64/ledger/narwhal/data" }
++snarkvm-ledger-narwhal-subdag = { path = "../../snarkVM-proving-wasm64/ledger/narwhal/subdag" }
++snarkvm-ledger-narwhal-transmission = { path = "../../snarkVM-proving-wasm64/ledger/narwhal/transmission" }
++snarkvm-ledger-narwhal-transmission-id = { path = "../../snarkVM-proving-wasm64/ledger/narwhal/transmission-id" }
++snarkvm-ledger-puzzle = { path = "../../snarkVM-proving-wasm64/ledger/puzzle" }
++snarkvm-ledger-puzzle-epoch = { path = "../../snarkVM-proving-wasm64/ledger/puzzle/epoch" }
++snarkvm-ledger-query = { path = "../../snarkVM-proving-wasm64/ledger/query" }
++snarkvm-ledger-store = { path = "../../snarkVM-proving-wasm64/ledger/store" }
++snarkvm-ledger-test-helpers = { path = "../../snarkVM-proving-wasm64/ledger/test-helpers" }
++snarkvm-metrics = { path = "../../snarkVM-proving-wasm64/metrics" }
++snarkvm-parameters = { path = "../../snarkVM-proving-wasm64/parameters" }
++snarkvm-synthesizer = { path = "../../snarkVM-proving-wasm64/synthesizer" }
++snarkvm-synthesizer-error = { path = "../../snarkVM-proving-wasm64/synthesizer/error" }
++snarkvm-synthesizer-process = { path = "../../snarkVM-proving-wasm64/synthesizer/process" }
++snarkvm-synthesizer-program = { path = "../../snarkVM-proving-wasm64/synthesizer/program" }
++snarkvm-synthesizer-snark = { path = "../../snarkVM-proving-wasm64/synthesizer/snark" }
++snarkvm-utilities = { path = "../../snarkVM-proving-wasm64/utilities" }
++snarkvm-utilities-derives = { path = "../../snarkVM-proving-wasm64/utilities/derives" }
++snarkvm-wasm = { path = "../../snarkVM-proving-wasm64/wasm" }
++
++reqwest_011 = { package = "reqwest", path = "../../wasm64-proving-dependencies/reqwest-0.11.27" }
++
++reqwest_013 = { package = "reqwest", path = "../../wasm64-proving-dependencies/reqwest-0.13.2" }
++getrandom_04 = { package = "getrandom", path = "../../wasm64-proving-dependencies/getrandom-0.4.2" }
++
++dirs = { path = "../../wasm64-proving-dependencies/dirs-4.0.0" }
+diff --git a/wasm/build.js b/wasm/build.js
+index 1fe29eec..151d21a4 100644
+--- a/wasm/build.js
++++ b/wasm/build.js
+@@ -19,6 +19,9 @@ async function buildRollup(input, output) {
+ 
+ const isDebugBuild = process.env.BUILD_DEBUG === "1";
+ 
++// Direct node invocations do not inherit Yarn's node_modules/.bin PATH additions.
++process.env.WASM_OPT_BIN ??= $path.resolve("../.build-tools/binaryen/bin/wasm-opt");
++
+ // Panic locations (kept below) embed absolute source paths for dependencies
+ // and the rebuilt std, which would publish the builder's home directory and
+ // make the binary differ per machine. Rewrite them to stable prefixes.
+@@ -40,31 +43,28 @@ async function buildWasm(network) {
+                     cargo: [
+                         "--no-default-features",
+                         "--features", `browser,${network}`,
++                        "--locked",
++                        "--config", 'profile.release.panic="abort"',
++                        "--config", "profile.release.codegen-units=1",
++                        "-Z", "build-std-features=optimize_for_size",
+                     ],
+                     rustc: [
+                         "-C", "link-arg=--max-memory=4294967296",
++                        "-C", "debuginfo=0",
++                        "-C", "strip=none",
+                         ...remapPathPrefixes,
+                     ],
+-                    wasmOpt: ["-O", "--enable-threads", "--enable-bulk-memory", "--enable-bulk-memory-opt", "--enable-nontrapping-float-to-int"],
++                    wasmBindgen: ["--keep-debug"],
++                    wasmOpt: ["-O", "--debuginfo", "--enable-threads", "--enable-bulk-memory", "--enable-bulk-memory-opt", "--enable-nontrapping-float-to-int"],
+                 },
+-                // Keep panic diagnostics in release builds: the plugin's
+-                // defaults inject `-Z location-detail=none` (panics report
+-                // `<redacted>:0:0`) and `-Z fmt-debug=none` (unwrap()/expect()
+-                // lose the inner error). With the panic hook installed at
+-                // module start, disabling both turns a bare
+-                // `RuntimeError: unreachable` into
+-                // `panicked at src/...:N:M: ... Err value: "<detail>"` for
+-                // ~+1.1% binary size (+0.22 MB per network, measured).
+-                // NOTE: a toolchain newer than nightly-2025-10-04 makes the
+-                // plugin enable `-Z panic-immediate-abort`, which removes
+-                // panic strings entirely and silently undoes this — revisit
+-                // when bumping rust-toolchain.toml.
++                // Cargo profile settings preserve release optimization and panic diagnostics.
++                // The plugin rustc optimizer enables immediate-abort on this nightly.
+                 optimize: isDebugBuild
+                     ? { release: false, wasmOpt: false, rustc: false }
+                     : {
+                         release: true,
+                         wasmOpt: true,
+-                        rustc: true,
++                        rustc: false,
+                         strip: {
+                             location: false,
+                             formatDebug: false,
+@@ -273,7 +273,6 @@ async function build(network) {
+ console.time("Building wasm");
+ 
+ const networks = [
+-    "testnet",
+     "mainnet",
+ ];
+ 
+diff --git a/wasm/src/lib.rs b/wasm/src/lib.rs
+index 44a20a35..11a9a394 100644
+--- a/wasm/src/lib.rs
++++ b/wasm/src/lib.rs
+@@ -172,7 +172,10 @@ pub use synthesizer::*;
+ pub mod types;
+ pub use types::{Field, Group, Scalar};
+ 
+-#[cfg(not(test))]
++#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
++mod proving_memory_debug;
++
++#[cfg(all(not(test), not(feature = "serial")))]
+ mod thread_pool;
+ 
+ mod utilities;
+@@ -193,7 +196,7 @@ pub use utilities::{
+     string_to_field,
+ };
+ 
+-#[cfg(test)]
++#[cfg(any(test, feature = "serial"))]
+ mod thread_pool {
+     use std::future::Future;
+ 
+@@ -299,7 +302,7 @@ impl Credits for RecordPlaintextNative {
+     }
+ }
+ 
+-#[cfg(not(test))]
++#[cfg(all(not(test), not(feature = "serial")))]
+ #[doc(hidden)]
+ pub use thread_pool::run_rayon_thread;
+ use types::native;
+@@ -319,6 +322,14 @@ pub fn install_panic_hook() {
+ pub async fn init_thread_pool(url: web_sys::Url, num_threads: usize) -> Result<(), JsValue> {
+     console_error_panic_hook::set_once();
+ 
++    #[cfg(feature = "serial")]
++    {
++        let _ = url;
++        if num_threads != 1 {
++            return Err(JsValue::from_str("This diagnostic package is single-threaded"));
++        }
++    }
++    #[cfg(not(feature = "serial"))]
+     thread_pool::ThreadPool::builder().url(url).num_threads(num_threads).build_global().await?;
+ 
+     Ok(())
+diff --git a/wasm/build-single.mjs b/wasm/build-single.mjs
+new file mode 100644
+index 00000000..f98614ce
+--- /dev/null
++++ b/wasm/build-single.mjs
+@@ -0,0 +1,83 @@
++import fs from "node:fs";
++import os from "node:os";
++import path from "node:path";
++import { spawnSync } from "node:child_process";
++import { createHash } from "node:crypto";
++
++const target = process.argv.find((arg) => arg.startsWith("--target="))?.slice(9)
++  ?? "wasm64-unknown-unknown";
++if (!["wasm64-unknown-unknown", "wasm32-unknown-unknown"].includes(target))
++  throw new Error("Unsupported single-thread target");
++const pointerBytes = target.startsWith("wasm64") ? 8 : 4;
++const output = path.resolve(`dist/mainnet-single${pointerBytes * 8}`);
++const maximumBytes = pointerBytes === 8 ? 8_589_934_592 : 4_294_967_296;
++const bindgen = process.env.PROVING_LAB_BINDGEN ??
++  "../../shield-extension/dist/proving-lab-memory64-rust/tools/wasm-bindgen-0.2.129-aarch64-apple-darwin/wasm-bindgen";
++const rustflags = [
++  "-C", "link-arg=--max-memory=" + maximumBytes,
++  "-C", "debuginfo=0", "-C", "strip=none",
++  "--remap-path-prefix", `${path.join(os.homedir(), ".cargo")}=cargo`,
++  "--remap-path-prefix", `${path.join(os.homedir(), ".rustup")}=rustup`,
++  "--remap-path-prefix", `${path.resolve("../..")}=workspace`,
++].join(" ");
++const environment = {
++  ...process.env,
++  RUSTFLAGS: rustflags,
++  CARGO_BUILD_JOBS: process.env.CARGO_BUILD_JOBS ?? "2",
++  CARGO_INCREMENTAL: "0",
++};
++const run = (command, args) => {
++  const result = spawnSync(command, args, { env: environment, stdio: "inherit" });
++  if (result.error) throw result.error;
++  if (result.status !== 0) throw new Error(`${path.basename(command)} failed (${result.status})`);
++};
++const started = Date.now();
++run("cargo", [
++  "build", "--locked", "--offline", "--release", "--target", target,
++  "--no-default-features", "--features", "browser,mainnet,serial",
++  "--config", 'profile.release.panic="abort"',
++  "--config", "profile.release.codegen-units=1",
++  "-Zbuild-std=std,panic_abort", "-Zbuild-std-features=optimize_for_size",
++]);
++fs.mkdirSync(output, { recursive: true });
++run(bindgen, [
++  path.resolve(`target/${target}/release/aleo_wasm.wasm`),
++  "--target", "web", "--keep-debug", "--out-name", "aleo_wasm", "--out-dir", output,
++]);
++const raw = path.join(output, "aleo_wasm_bg.wasm");
++const wasm = path.join(output, "aleo_wasm.wasm");
++run("../.build-tools/binaryen/bin/wasm-opt", [
++  raw, "-O", "--debuginfo", "--enable-memory64", "--enable-bulk-memory",
++  "--enable-nontrapping-float-to-int", "-o", wasm,
++]);
++fs.unlinkSync(raw);
++fs.writeFileSync(path.join(output, "index.js"), `
++import initialize, { initThreadPool as initializePool } from "./aleo_wasm.js";
++export * from "./aleo_wasm.js";
++await initialize({ module_or_path: new URL("./aleo_wasm.wasm", import.meta.url) });
++export async function initThreadPool(threads = 1) {
++  if (threads !== 1) throw new Error("This diagnostic package is single-threaded");
++  await initializePool(new URL("worker.js", import.meta.url), threads);
++}
++`);
++fs.writeFileSync(path.join(output, "worker.js"),
++  'throw new Error("Single-thread diagnostic package cannot start Rayon workers");\n');
++const sha = (file) => createHash("sha256").update(fs.readFileSync(file)).digest("hex");
++const metadata = {
++  diagnosticBuild: `wasm${pointerBytes * 8}-single`,
++  sdkVersion: "0.12.1", snarkvmVersion: "4.12.0",
++  sdkRevision: "6fca0da897ce85baff3890d287ebfc7d9b518ffa",
++  snarkvmRevision: "56b6c6025c96cc1e36aacdb8edc008a910f8ba9e",
++  target, pointerBytes, counterWordBytes: pointerBytes, counterSchema: 3,
++  sharedMemory: false, threads: 1, maximumBytes,
++  toolchain: "nightly-2026-04-02", wasmBindgen: "0.2.129", binaryen: "125",
++  profile: { optLevel: 3, lto: true, codegenUnits: 1, panic: "abort" },
++  cargoLockSha256: sha("Cargo.lock"), buildScriptSha256: sha("build-single.mjs"),
++  elapsedMs: Date.now() - started,
++  artifacts: Object.fromEntries(["aleo_wasm.wasm", "aleo_wasm.js", "index.js", "worker.js"]
++    .map((name) => [name, { bytes: fs.statSync(path.join(output, name)).size,
++      sha256: sha(path.join(output, name)) }])),
++};
++fs.writeFileSync(path.join(output, "proving-memory-build.json"), JSON.stringify(metadata, null, 2) + "\n");
++console.log(JSON.stringify({ event: "single-build-completed", target,
++  wasmSha256: metadata.artifacts["aleo_wasm.wasm"].sha256, elapsedMs: metadata.elapsedMs }));
+diff --git a/wasm/build-threaded.mjs b/wasm/build-threaded.mjs
+new file mode 100644
+index 00000000..d0d83b3f
+--- /dev/null
++++ b/wasm/build-threaded.mjs
+@@ -0,0 +1,111 @@
++import fs from "node:fs";
++import os from "node:os";
++import path from "node:path";
++import { spawnSync } from "node:child_process";
++import { createHash } from "node:crypto";
++
++const target = process.argv.find((arg) => arg.startsWith("--target="))?.slice(9)
++  ?? "wasm64-unknown-unknown";
++if (!["wasm64-unknown-unknown", "wasm32-unknown-unknown"].includes(target))
++  throw new Error("Unsupported threaded target");
++const pointerBytes = target.startsWith("wasm64") ? 8 : 4;
++const output = path.resolve(`dist/mainnet-threads${pointerBytes * 8}`);
++const maximumBytes = pointerBytes === 8 ? 8_589_934_592 : 4_294_967_296;
++const bindgen = process.env.PROVING_LAB_BINDGEN ??
++  "../../shield-extension/dist/proving-lab-wasm64/bindgen-target/release/wasm-bindgen";
++const rustflags = [
++  "-C", "link-arg=--max-memory=" + maximumBytes,
++  "-C", "debuginfo=0", "-C", "strip=none",
++  "-C", "target-feature=+atomics,+bulk-memory,+mutable-globals",
++  "-C", "link-arg=--shared-memory", "-C", "link-arg=--import-memory",
++  "-C", "link-arg=--export=__wasm_init_tls",
++  "-C", "link-arg=--export=__tls_size", "-C", "link-arg=--export=__tls_align",
++  "-C", "link-arg=--export=__tls_base",
++  "--remap-path-prefix", `${path.join(os.homedir(), ".cargo")}=cargo`,
++  "--remap-path-prefix", `${path.join(os.homedir(), ".rustup")}=rustup`,
++  "--remap-path-prefix", `${path.resolve("../..")}=workspace`,
++].join(" ");
++const environment = {
++  ...process.env,
++  RUSTFLAGS: rustflags,
++  CARGO_BUILD_JOBS: process.env.CARGO_BUILD_JOBS ?? "2",
++  CARGO_INCREMENTAL: "0",
++};
++const run = (command, args) => {
++  const result = spawnSync(command, args, { env: environment, stdio: "inherit" });
++  if (result.error) throw result.error;
++  if (result.status !== 0) throw new Error(`${path.basename(command)} failed (${result.status})`);
++};
++const started = Date.now();
++run("cargo", [
++  "build", "--locked", "--offline", "--release", "--target", target,
++  "--no-default-features", "--features", "browser,mainnet",
++  "--config", 'profile.release.panic="abort"',
++  "--config", "profile.release.codegen-units=1",
++  "-Zbuild-std=std,panic_abort", "-Zbuild-std-features=optimize_for_size",
++]);
++fs.mkdirSync(output, { recursive: true });
++run(bindgen, [
++  path.resolve(`target/${target}/release/aleo_wasm.wasm`),
++  "--target", "web", "--keep-debug", "--out-name", "aleo_wasm", "--out-dir", output,
++]);
++const raw = path.join(output, "aleo_wasm_bg.wasm");
++const wasm = path.join(output, "aleo_wasm.wasm");
++run("../.build-tools/binaryen/bin/wasm-opt", [
++  raw, "-O", "--debuginfo", "--enable-memory64", "--enable-threads", "--enable-bulk-memory",
++  "--enable-nontrapping-float-to-int", "-o", wasm,
++]);
++fs.unlinkSync(raw);
++fs.writeFileSync(path.join(output, "index.js"), `
++import initialize, { initThreadPool as initializePool } from "./aleo_wasm.js";
++export * from "./aleo_wasm.js";
++let parameterUrls = [];
++export function configureLocalParameterUrls(urls) { parameterUrls = urls; }
++await initialize({ module_or_path: new URL("./aleo_wasm.wasm", import.meta.url) });
++export async function initThreadPool(threads = navigator.hardwareConcurrency) {
++  const url = new URL("worker.js", import.meta.url);
++  if (parameterUrls.length) url.searchParams.set("parameters", JSON.stringify(parameterUrls));
++  await initializePool(url, threads);
++}
++`);
++fs.writeFileSync(path.join(output, "worker.js"), `
++import initialize from "./aleo_wasm.js";
++const urls = new Map(JSON.parse(new URL(self.location).searchParams.get("parameters") ?? "[]")
++  .map(url => [url, new URL("/parameters/" + new URL(url).pathname.split("/").at(-1), self.location).href]));
++const originalFetch = globalThis.fetch;
++globalThis.fetch = (input, options = {}) => {
++  if ((options.method ?? "GET").toUpperCase() !== "GET") throw new Error("Read-only proving lab");
++  const url = typeof input === "string" ? input : input.url ?? input.href;
++  return originalFetch(urls.get(url) ?? input, options);
++};
++const OriginalXHR = globalThis.XMLHttpRequest;
++globalThis.XMLHttpRequest = class extends OriginalXHR {
++  open(method, url, ...args) { return super.open(method, urls.get(String(url)) ?? url, ...args); }
++};
++const init = ({ module, memory }) => initialize({ module_or_path: module, memory });
++const { module, memory, address } = await new Promise(resolve =>
++  addEventListener("message", ({ data }) => resolve(data), { once: true }));
++const exports = await init({ module, memory });
++postMessage(null);
++exports.runRayonThread(address);
++close();
++`);
++const sha = (file) => createHash("sha256").update(fs.readFileSync(file)).digest("hex");
++const metadata = {
++  diagnosticBuild: `wasm${pointerBytes * 8}-experimental-threads`,
++  sdkVersion: "0.12.1", snarkvmVersion: "4.12.0",
++  sdkRevision: "6fca0da897ce85baff3890d287ebfc7d9b518ffa",
++  snarkvmRevision: "56b6c6025c96cc1e36aacdb8edc008a910f8ba9e",
++  target, pointerBytes, counterWordBytes: pointerBytes, counterSchema: 3,
++  sharedMemory: true, threads: "caller-selected", maximumBytes,
++  toolchain: "nightly-2026-04-02", wasmBindgen: "0.2.129", binaryen: "125",
++  profile: { optLevel: 3, lto: true, codegenUnits: 1, panic: "abort" },
++  cargoLockSha256: sha("Cargo.lock"), buildScriptSha256: sha("build-threaded.mjs"),
++  elapsedMs: Date.now() - started,
++  artifacts: Object.fromEntries(["aleo_wasm.wasm", "aleo_wasm.js", "index.js", "worker.js"]
++    .map((name) => [name, { bytes: fs.statSync(path.join(output, name)).size,
++      sha256: sha(path.join(output, name)) }])),
++};
++fs.writeFileSync(path.join(output, "proving-memory-build.json"), JSON.stringify(metadata, null, 2) + "\n");
++console.log(JSON.stringify({ event: "threaded-build-completed", target,
++  wasmSha256: metadata.artifacts["aleo_wasm.wasm"].sha256, elapsedMs: metadata.elapsedMs }));
+diff --git a/wasm/src/proving_memory_debug.rs b/wasm/src/proving_memory_debug.rs
+new file mode 100644
+index 00000000..d9874141
+--- /dev/null
++++ b/wasm/src/proving_memory_debug.rs
+@@ -0,0 +1,139 @@
++// Copyright (C) 2019-2025 Provable Inc.
++// This file is part of the Provable SDK library.
++
++// The Provable SDK library is free software: you can redistribute it and/or modify
++// it under the terms of the GNU General Public License as published by
++// the Free Software Foundation, either version 3 of the License, or
++// (at your option) any later version.
++
++// The Provable SDK library is distributed in the hope that it will be useful,
++// but WITHOUT ANY WARRANTY; without even the implied warranty of
++// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++// GNU General Public License for more details.
++
++// You should have received a copy of the GNU General Public License
++// along with the Provable SDK library. If not, see <https://www.gnu.org/licenses/>.
++
++use snarkvm_algorithms::proving_debug::{self, COUNTERS};
++use std::{
++    alloc::{GlobalAlloc, Layout, System},
++    sync::atomic::Ordering,
++};
++use wasm_bindgen::prelude::*;
++
++struct ObservedAllocator;
++
++// All allocation operations are forwarded unchanged to Rust's existing system allocator.
++// Counters use only atomics and cannot allocate or recursively invoke this allocator.
++unsafe impl GlobalAlloc for ObservedAllocator {
++    unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
++        let pointer = unsafe { System.alloc(layout) };
++        COUNTERS[proving_debug::ALLOCATION_COUNT].fetch_add(1, Ordering::Relaxed);
++        if pointer.is_null() {
++            proving_debug::allocation_failed(layout.size());
++        } else {
++            proving_debug::allocated(layout.size());
++        }
++        emit_progress(layout.size(), pointer.is_null());
++        pointer
++    }
++
++    unsafe fn alloc_zeroed(&self, layout: Layout) -> *mut u8 {
++        let pointer = unsafe { System.alloc_zeroed(layout) };
++        COUNTERS[proving_debug::ALLOCATION_COUNT].fetch_add(1, Ordering::Relaxed);
++        if pointer.is_null() {
++            proving_debug::allocation_failed(layout.size());
++        } else {
++            proving_debug::allocated(layout.size());
++        }
++        emit_progress(layout.size(), pointer.is_null());
++        pointer
++    }
++
++    unsafe fn dealloc(&self, pointer: *mut u8, layout: Layout) {
++        unsafe { System.dealloc(pointer, layout) };
++        proving_debug::deallocated(layout.size());
++        COUNTERS[proving_debug::DEALLOCATION_COUNT].fetch_add(1, Ordering::Relaxed);
++        emit_progress(layout.size(), false);
++    }
++
++    unsafe fn realloc(&self, pointer: *mut u8, layout: Layout, size: usize) -> *mut u8 {
++        let result = unsafe { System.realloc(pointer, layout, size) };
++        COUNTERS[proving_debug::REALLOCATION_COUNT].fetch_add(1, Ordering::Relaxed);
++        if result.is_null() {
++            proving_debug::allocation_failed(size);
++        } else if size >= layout.size() {
++            proving_debug::allocated(size - layout.size());
++        } else {
++            proving_debug::deallocated(layout.size() - size);
++        }
++        emit_progress(size, result.is_null());
++        result
++    }
++}
++
++#[global_allocator]
++static ALLOCATOR: ObservedAllocator = ObservedAllocator;
++
++/// 0 preserves stock scheduling; 1 serializes outer jobs; 2 also serializes MSM windows.
++#[wasm_bindgen(js_name = "setProvingMemoryMode")]
++pub fn set_proving_memory_mode(mode: u32) -> Result<(), JsValue> {
++    if mode > 2 {
++        return Err(JsValue::from_str("Proving memory mode must be 0, 1, or 2"));
++    }
++    let stage = COUNTERS[proving_debug::STAGE].load(Ordering::Acquire);
++    if COUNTERS[proving_debug::JOBS_ACTIVE].load(Ordering::Relaxed) != 0
++        || COUNTERS[proving_debug::MSM_WINDOWS_ACTIVE].load(Ordering::Relaxed) != 0
++        || (100..190).contains(&stage)
++    {
++        return Err(JsValue::from_str("Cannot change proving memory mode while jobs are active"));
++    }
++    proving_debug::set_memory_mode(mode);
++    Ok(())
++}
++
++/// A fixed, aligned atomic counter block containing no inputs, keys, witnesses, or allocations' contents.
++#[wasm_bindgen(js_name = "getProvingDiagnosticsPointer")]
++pub fn get_proving_diagnostics_pointer() -> usize {
++    COUNTERS.as_ptr() as usize
++}
++
++#[wasm_bindgen(js_name = "getProvingDiagnosticsMemory")]
++pub fn get_proving_diagnostics_memory() -> JsValue {
++    wasm_bindgen::memory()
++}
++
++#[wasm_bindgen(js_name = "getProvingDiagnostics")]
++pub fn get_proving_diagnostics() -> Vec<f64> {
++    COUNTERS.iter().map(|counter| counter.load(Ordering::Relaxed) as f64).collect()
++}
++
++#[wasm_bindgen(inline_js = r#"
++export function reportAllocationSample(force) {
++    globalThis.__shieldProvingAllocationSample?.(force);
++}
++"#)]
++extern "C" {
++    #[wasm_bindgen(js_name = reportAllocationSample)]
++    fn report_allocation_sample(force: bool);
++}
++
++fn emit_progress(size: usize, failed: bool) {
++    let operations = COUNTERS[proving_debug::ALLOCATION_COUNT]
++        .load(Ordering::Relaxed)
++        .wrapping_add(COUNTERS[proving_debug::DEALLOCATION_COUNT].load(Ordering::Relaxed))
++        .wrapping_add(COUNTERS[proving_debug::REALLOCATION_COUNT].load(Ordering::Relaxed));
++    if failed || size >= 1_048_576 || operations & 0xFFFF == 0 {
++        report_allocation_sample(failed);
++    }
++}
++
++#[wasm_bindgen(js_name = "getProvingDiagnosticsWordBytes")]
++pub fn get_proving_diagnostics_word_bytes() -> usize {
++    std::mem::size_of::<usize>()
++}
++
++#[wasm_bindgen(js_name = "getProvingPointerBytes")]
++pub fn get_proving_pointer_bytes() -> usize {
++    std::mem::size_of::<usize>()
++}

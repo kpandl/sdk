@@ -1,0 +1,727 @@
+diff --git a/algorithms/src/lib.rs b/algorithms/src/lib.rs
+index b5ee67147..1a6d94398 100644
+--- a/algorithms/src/lib.rs
++++ b/algorithms/src/lib.rs
+@@ -24,7 +24,15 @@ extern crate aleo_std;
+ #[macro_use]
+ extern crate thiserror;
+ 
+-pub use snarkvm_utilities::{cfg_chunks, cfg_chunks_mut, cfg_into_iter, cfg_iter, cfg_iter_mut, cfg_reduce};
++pub use snarkvm_utilities::{
++    cfg_chunks,
++    cfg_chunks_mut,
++    cfg_into_iter,
++    cfg_iter,
++    cfg_iter_mut,
++    cfg_reduce,
++    proving_debug,
++};
+ 
+ pub mod crypto_hash;
+ pub mod fft;
+diff --git a/algorithms/src/msm/variable_base/batched.rs b/algorithms/src/msm/variable_base/batched.rs
+index 2a0bcd504..7f95d73df 100644
+--- a/algorithms/src/msm/variable_base/batched.rs
++++ b/algorithms/src/msm/variable_base/batched.rs
+@@ -403,8 +403,13 @@ pub fn msm<G: AffineCurve>(bases: &[G], scalars: &[<G::ScalarField as PrimeField
+         // Each window is of size `c`.
+         // We divide up the bits 0..num_bits into windows of size `c`, and
+         // in parallel process each such window.
+-        let window_sums: Vec<_> =
+-            cfg_into_iter!(0..num_bits).step_by(c).map(|w_start| batched_window(bases, scalars, w_start, c)).collect();
++        let calculate_window =
++            |w_start| crate::proving_debug::run_msm_window(|| batched_window(bases, scalars, w_start, c));
++        let window_sums: Vec<_> = if crate::proving_debug::memory_mode() >= 2 {
++            (0..num_bits).step_by(c).map(calculate_window).collect()
++        } else {
++            cfg_into_iter!(0..num_bits).step_by(c).map(calculate_window).collect()
++        };
+ 
+         // We store the sum for the lowest window.
+         let (lowest, window_sums) = window_sums.split_first().unwrap();
+diff --git a/algorithms/src/msm/variable_base/mod.rs b/algorithms/src/msm/variable_base/mod.rs
+index 591e04390..92bdc6295 100644
+--- a/algorithms/src/msm/variable_base/mod.rs
++++ b/algorithms/src/msm/variable_base/mod.rs
+@@ -88,6 +88,27 @@ mod tests {
+         (bases, scalars)
+     }
+ 
++    #[test]
++    fn test_serial_msm_windows_match_naive_and_return_to_idle() {
++        use snarkvm_curves::ProjectiveCurve;
++        use std::sync::atomic::Ordering;
++        let mut rng = TestRng::fixed(9021);
++        let (bases, scalars) = create_scalar_bases::<G1Affine, Fr>(&mut rng, 2048);
++        crate::proving_debug::set_memory_mode(0);
++        let expected = VariableBase::msm_naive(&bases, &scalars).to_affine();
++        for mode in 0..=2 {
++            crate::proving_debug::set_memory_mode(mode);
++            assert_eq!(standard::msm(&bases, &scalars).to_affine(), expected);
++            assert_eq!(batched::msm(&bases, &scalars).to_affine(), expected);
++            assert_eq!(VariableBase::msm(&bases, &scalars).to_affine(), expected);
++            assert_eq!(
++                crate::proving_debug::COUNTERS[crate::proving_debug::MSM_WINDOWS_ACTIVE].load(Ordering::Relaxed),
++                0
++            );
++        }
++        crate::proving_debug::set_memory_mode(0);
++    }
++
+     #[test]
+     fn test_msm() {
+         use snarkvm_curves::ProjectiveCurve;
+diff --git a/algorithms/src/msm/variable_base/standard.rs b/algorithms/src/msm/variable_base/standard.rs
+index 138e733f7..6d7f3f92d 100644
+--- a/algorithms/src/msm/variable_base/standard.rs
++++ b/algorithms/src/msm/variable_base/standard.rs
+@@ -88,8 +88,13 @@ pub fn msm<G: AffineCurve>(bases: &[G], scalars: &[<G::ScalarField as PrimeField
+     // Each window is of size `c`.
+     // We divide up the bits 0..num_bits into windows of size `c`, and
+     // in parallel process each such window.
+-    let window_sums: Vec<_> =
+-        cfg_into_iter!(0..num_bits).step_by(c).map(|w_start| standard_window(bases, scalars, w_start, c)).collect();
++    let calculate_window =
++        |w_start| crate::proving_debug::run_msm_window(|| standard_window(bases, scalars, w_start, c));
++    let window_sums: Vec<_> = if crate::proving_debug::memory_mode() >= 2 {
++        (0..num_bits).step_by(c).map(calculate_window).collect()
++    } else {
++        cfg_into_iter!(0..num_bits).step_by(c).map(calculate_window).collect()
++    };
+ 
+     // We store the sum for the lowest window.
+     let (lowest, window_sums) = window_sums.split_first().unwrap();
+diff --git a/algorithms/src/snark/varuna/ahp/prover/round_functions/prepare_third.rs b/algorithms/src/snark/varuna/ahp/prover/round_functions/prepare_third.rs
+index c25ccb230..032180b5e 100644
+--- a/algorithms/src/snark/varuna/ahp/prover/round_functions/prepare_third.rs
++++ b/algorithms/src/snark/varuna/ahp/prover/round_functions/prepare_third.rs
+@@ -136,7 +136,7 @@ impl<F: PrimeField, SM: SNARKMode> AHPForR1CS<F, SM> {
+                     job_pool.add_job(move || {
+                         let z_m_at_alpha = Self::calculate_lineval_sumcheck_instance_witness(
+                             label,
+-                            &l_at_alpha,
++                            l_at_alpha,
+                             &circuit_specific_state.variable_domain,
+                             precomp.0,
+                             precomp.1,
+diff --git a/algorithms/src/snark/varuna/ahp/prover/round_functions/third.rs b/algorithms/src/snark/varuna/ahp/prover/round_functions/third.rs
+index 4d820339c..776813abf 100644
+--- a/algorithms/src/snark/varuna/ahp/prover/round_functions/third.rs
++++ b/algorithms/src/snark/varuna/ahp/prover/round_functions/third.rs
+@@ -40,7 +40,7 @@ use snarkvm_utilities::ExecutionPool;
+ use anyhow::{Result, ensure};
+ use itertools::Itertools;
+ use rand::Rng;
+-use std::collections::BTreeMap;
++use std::{collections::BTreeMap, sync::Arc};
+ 
+ struct LinevalInstance<F: PrimeField> {
+     h_1_i: DensePolynomial<F>,
+@@ -89,8 +89,12 @@ impl<F: PrimeField, SM: SNARKMode> AHPForR1CS<F, SM> {
+         )
+         .map_err(AHPError::AnyhowError)?;
+ 
+-        let assignments = Self::calculate_assignments(&mut state)?;
+-        let matrix_transposes = Self::calculate_matrix_transpose(&mut state)?;
++        let (assignments, matrix_transposes) = match varuna_version {
++            VarunaVersion::V1 => {
++                (Self::calculate_assignments(&mut state)?, Self::calculate_matrix_transpose(&mut state)?)
++            }
++            VarunaVersion::V2 | VarunaVersion::V3 => (BTreeMap::new(), BTreeMap::new()),
++        };
+ 
+         let (h_1, x_g_1_sum, msg) = Self::calculate_lineval_sumcheck_witness(
+             &mut state,
+@@ -165,24 +169,22 @@ impl<F: PrimeField, SM: SNARKMode> AHPForR1CS<F, SM> {
+             third_round_batch_combiners.len(),
+             state.circuit_specific_states.len()
+         );
+-        ensure!(
+-            state.circuit_specific_states.len() == assignments.len(),
+-            "[calculate Lineval Sumcheck Witness] Expected {} assignments, but {} were provided.",
+-            assignments.len(),
+-            state.circuit_specific_states.len()
+-        );
+-        ensure!(
+-            state.circuit_specific_states.len() == matrix_transposes.len(),
+-            "[calculate Lineval Sumcheck Witness] Expected {} matrix transposes, but {} were provided.",
+-            matrix_transposes.len(),
+-            state.circuit_specific_states.len()
+-        );
+-        for ((((circuit, circuit_specific_state), batch_combiner), assignments_i), matrix_transposes_i) in state
+-            .circuit_specific_states
+-            .iter_mut()
+-            .zip_eq(third_round_batch_combiners.values())
+-            .zip_eq(assignments.values())
+-            .zip_eq(matrix_transposes.values())
++        if varuna_version == VarunaVersion::V1 {
++            ensure!(
++                state.circuit_specific_states.len() == assignments.len(),
++                "[calculate Lineval Sumcheck Witness] Expected {} assignments, but {} were provided.",
++                assignments.len(),
++                state.circuit_specific_states.len()
++            );
++            ensure!(
++                state.circuit_specific_states.len() == matrix_transposes.len(),
++                "[calculate Lineval Sumcheck Witness] Expected {} matrix transposes, but {} were provided.",
++                matrix_transposes.len(),
++                state.circuit_specific_states.len()
++            );
++        }
++        for ((circuit, circuit_specific_state), batch_combiner) in
++            state.circuit_specific_states.iter_mut().zip_eq(third_round_batch_combiners.values())
+         {
+             let circuit_combiner = batch_combiner.circuit_combiner;
+             let instance_combiners = &batch_combiner.instance_combiners;
+@@ -190,9 +192,11 @@ impl<F: PrimeField, SM: SNARKMode> AHPForR1CS<F, SM> {
+             let variable_domain = &circuit_specific_state.variable_domain;
+             let fft_precomputation = &circuit.fft_precomputation;
+             let ifft_precomputation = &circuit.ifft_precomputation;
++            let assignments_i = assignments.get(&circuit.id);
++            let matrix_transposes_i = matrix_transposes.get(&circuit.id);
+ 
+             // Iterate for each instance in the batch.
+-            for (instance_combiner, assignment) in itertools::izip!(instance_combiners, assignments_i) {
++            for (instance_index, instance_combiner) in instance_combiners.iter().enumerate() {
+                 // Destructure the optional z_m_at_alpha_polys to a vector of optional
+                 // DensePolynomials.
+                 let z_m_at_alpha_for_circuit = match &mut circuit_specific_state.z_m_at_alpha_polys {
+@@ -209,14 +213,19 @@ impl<F: PrimeField, SM: SNARKMode> AHPForR1CS<F, SM> {
+                 for (label, matrix_combiner, z_m_at_alpha) in
+                     itertools::izip!(matrix_labels, matrix_combiners, z_m_at_alpha_for_circuit)
+                 {
+-                    let matrix_transpose = &matrix_transposes_i[label];
+                     let combiner = circuit_combiner * instance_combiner * matrix_combiner;
+                     job_pool.add_job(move || match varuna_version {
+                         VarunaVersion::V1 => {
+-                            let l_at_alpha = constraint_domain.evaluate_all_lagrange_coefficients(*alpha);
++                            let assignment = assignments_i
++                                .and_then(|assignments| assignments.get(instance_index))
++                                .ok_or_else(|| anyhow::anyhow!("Expected an assignment for the V1 instance"))?;
++                            let matrix_transpose = matrix_transposes_i
++                                .and_then(|matrices| matrices.get(label))
++                                .ok_or_else(|| anyhow::anyhow!("Expected a matrix transpose for the V1 instance"))?;
++                            let l_at_alpha = Arc::new(constraint_domain.evaluate_all_lagrange_coefficients(*alpha));
+                             let z_m_at_alpha = Self::calculate_lineval_sumcheck_instance_witness(
+                                 label,
+-                                &l_at_alpha,
++                                l_at_alpha,
+                                 variable_domain,
+                                 fft_precomputation,
+                                 ifft_precomputation,
+@@ -347,7 +356,7 @@ impl<F: PrimeField, SM: SNARKMode> AHPForR1CS<F, SM> {
+     #[allow(clippy::too_many_arguments)]
+     pub(in crate::snark::varuna) fn calculate_lineval_sumcheck_instance_witness(
+         _matrix_label: &str,
+-        l_at_alpha: &[F],
++        l_at_alpha: Arc<Vec<F>>,
+         variable_domain: &EvaluationDomain<F>,
+         fft_precomputation: &FFTPrecomputation<F>,
+         ifft_precomputation: &IFFTPrecomputation<F>,
+@@ -368,6 +377,7 @@ impl<F: PrimeField, SM: SNARKMode> AHPForR1CS<F, SM> {
+             .iter()
+             .map(|col| col.iter().map(|(val, row_index)| *val * l_at_alpha[*row_index]).sum::<F>())
+             .collect();
++        drop(l_at_alpha);
+         end_timer!(m_at_alpha_evals_time);
+ 
+         let z_m_at_alpha_time = start_timer!(|| format!("Compute z_m_at_alpha_time for {_matrix_label}"));
+diff --git a/algorithms/src/snark/varuna/tests.rs b/algorithms/src/snark/varuna/tests.rs
+index 55d4e7e71..68d3a8e54 100644
+--- a/algorithms/src/snark/varuna/tests.rs
++++ b/algorithms/src/snark/varuna/tests.rs
+@@ -111,6 +111,73 @@ mod varuna {
+         .assert_eq(&snapshot);
+     }
+ 
++    #[test]
++    fn test_varuna_memory_mode_sequential_outer_jobs() {
++        crate::proving_debug::set_memory_mode(1);
++        test_varuna_v3_key_reuse_and_batch();
++        crate::proving_debug::set_memory_mode(0);
++        use std::sync::atomic::Ordering;
++        assert_eq!(crate::proving_debug::COUNTERS[crate::proving_debug::STAGE].load(Ordering::Relaxed), 190);
++        assert_eq!(crate::proving_debug::COUNTERS[crate::proving_debug::JOBS_ACTIVE].load(Ordering::Relaxed), 0);
++    }
++
++    #[test]
++    fn test_varuna_memory_modes_produce_identical_proof() {
++        fn check<SM: SNARKMode>() {
++            type Inst<SM> = VarunaSNARK<Bls12_377, FS, SM>;
++            let rng = &mut TestRng::fixed(413);
++            let srs = Inst::<SM>::universal_setup(512).expect("valid test fixture");
++            let prover = srs.to_universal_prover().expect("valid test fixture");
++            let verifier = srs.to_universal_verifier().expect("valid test fixture");
++            let parameters = FS::sample_parameters();
++            let (circuit, inputs) = TestCircuit::gen_rand(2, 32, 25, rng);
++            let (pk, vk) = Inst::<SM>::circuit_setup(&srs, &circuit).expect("valid test fixture");
++            for version in [VarunaVersion::V1, VarunaVersion::V2, VarunaVersion::V3] {
++                let mut stock_bytes = None;
++                for mode in 0..=2 {
++                    crate::proving_debug::set_memory_mode(mode);
++                    let proof =
++                        Inst::<SM>::prove(&prover, &parameters, &pk, version, &circuit, &mut TestRng::fixed(888))
++                            .expect("valid test fixture");
++                    assert!(
++                        Inst::<SM>::verify(&verifier, &parameters, &vk, version, inputs.clone(), &proof,)
++                            .expect("valid test fixture")
++                    );
++                    let bytes = proof.to_bytes_le().expect("valid proof");
++                    if let Some(stock) = &stock_bytes {
++                        assert_eq!(&bytes, stock, "Proof bytes differ for mode {mode}");
++                    } else {
++                        stock_bytes = Some(bytes);
++                    }
++                    use std::sync::atomic::Ordering;
++                    assert_eq!(
++                        crate::proving_debug::COUNTERS[crate::proving_debug::MSM_WINDOWS_ACTIVE]
++                            .load(Ordering::Relaxed),
++                        0
++                    );
++                    assert_eq!(
++                        crate::proving_debug::COUNTERS[crate::proving_debug::JOBS_ACTIVE].load(Ordering::Relaxed),
++                        0
++                    );
++                }
++            }
++            crate::proving_debug::set_memory_mode(0);
++        }
++        check::<VarunaHidingMode>();
++        check::<VarunaNonHidingMode>();
++    }
++
++    #[test]
++    fn test_varuna_memory_mode_serial_msm_batch() {
++        crate::proving_debug::set_memory_mode(2);
++        test_varuna_v3_key_reuse_and_batch();
++        crate::proving_debug::set_memory_mode(0);
++        use std::sync::atomic::Ordering;
++        assert_eq!(crate::proving_debug::COUNTERS[crate::proving_debug::MSM_WINDOWS_ACTIVE].load(Ordering::Relaxed), 0);
++        assert_eq!(crate::proving_debug::COUNTERS[crate::proving_debug::JOBS_ACTIVE].load(Ordering::Relaxed), 0);
++        assert_eq!(crate::proving_debug::COUNTERS[crate::proving_debug::STAGE].load(Ordering::Relaxed), 190);
++    }
++
+     #[test]
+     fn test_varuna_v3_key_reuse_and_batch() {
+         use snarkvm_utilities::FromBytes;
+@@ -208,7 +275,7 @@ mod varuna {
+             let state = AHPForR1CS::<_, VarunaHidingMode>::prover_first_round(state, rng).expect("valid test fixture");
+             let (_, state) = AHPForR1CS::<_, VarunaHidingMode>::prover_second_round(&first_message, state, rng)
+                 .expect("valid test fixture");
+-            let (claims, state) = AHPForR1CS::<_, VarunaHidingMode>::prover_prepare_third_round(
++            let (claims, mut state) = AHPForR1CS::<_, VarunaHidingMode>::prover_prepare_third_round(
+                 &first_message,
+                 &second_message,
+                 state,
+@@ -238,6 +305,8 @@ mod varuna {
+             assert_eq!(average, claims.sum(&combiners, eta_a, eta_b, eta_c) * domain.size_inv);
+             let challenges =
+                 PrepareThirdMessage { third_round_batch_combiners: combiners.clone(), eta_a, eta_b, eta_c };
++            // The prepared third round uses the mask and the prepared lineval polynomials.
++            state.first_round_oracles.as_mut().expect("valid test fixture").batches.clear();
+             let (_, oracles, _) = AHPForR1CS::<_, VarunaHidingMode>::prover_third_round(
+                 &first_message,
+                 &second_message,
+diff --git a/algorithms/src/snark/varuna/varuna.rs b/algorithms/src/snark/varuna/varuna.rs
+index 2a637c696..3a5f8d4e5 100644
+--- a/algorithms/src/snark/varuna/varuna.rs
++++ b/algorithms/src/snark/varuna/varuna.rs
+@@ -360,6 +360,7 @@ where
+         zk_rng: &mut R,
+     ) -> Result<Self::Proof> {
+         let prover_time = start_timer!(|| "Varuna::Prover");
++        crate::proving_debug::stage(100);
+         if keys_to_constraints.is_empty() {
+             bail!(SNARKError::EmptyBatch);
+         }
+@@ -369,6 +370,7 @@ where
+             circuits_to_constraints.insert(pk.circuit.deref(), *constraints);
+         }
+         let prover_state = AHPForR1CS::<_, SM>::init_prover(&circuits_to_constraints, zk_rng)?;
++        crate::proving_debug::stage(101);
+ 
+         // extract information from the prover key and state to consume in further
+         // calculations
+@@ -440,7 +442,9 @@ where
+         // --------------------------------------------------------------------
+         // First round
+ 
++        crate::proving_debug::stage(110);
+         let prover_state = AHPForR1CS::<_, SM>::prover_first_round(prover_state, zk_rng)?;
++        crate::proving_debug::stage(111);
+ 
+         let first_round_comm_time = start_timer!(|| "Committing to first round polys");
+         let (first_commitments, first_commitment_randomnesses) = {
+@@ -453,6 +457,7 @@ where
+             )?
+         };
+         end_timer!(first_round_comm_time);
++        crate::proving_debug::stage(112);
+ 
+         Self::absorb_labeled(&first_commitments, &mut sponge);
+ 
+@@ -469,8 +474,10 @@ where
+         // --------------------------------------------------------------------
+         // Second round
+ 
++        crate::proving_debug::stage(120);
+         let (second_oracles, prover_state) =
+             AHPForR1CS::<_, SM>::prover_second_round(&verifier_first_message, prover_state, zk_rng)?;
++        crate::proving_debug::stage(121);
+ 
+         let second_round_comm_time = start_timer!(|| "Committing to second round polys");
+         let (second_commitments, second_commitment_randomnesses) = SonicKZG10::<E, FS>::commit(
+@@ -480,6 +487,7 @@ where
+             SM::ZK.then_some(zk_rng),
+         )?;
+         end_timer!(second_round_comm_time);
++        crate::proving_debug::stage(122);
+ 
+         Self::absorb_labeled(&second_commitments, &mut sponge);
+ 
+@@ -490,6 +498,7 @@ where
+         // --------------------------------------------------------------------
+         // Preparation for third round
+ 
++        crate::proving_debug::stage(130);
+         let (prover_prepare_third_message, prover_state, verifier_prepare_third_msg, verifier_state) = {
+             match varuna_version {
+                 VarunaVersion::V1 => (None, prover_state, None, verifier_state),
+@@ -524,6 +533,7 @@ where
+         // --------------------------------------------------------------------
+         // Third round
+ 
++        crate::proving_debug::stage(140);
+         let (prover_third_message, third_oracles, prover_state) = AHPForR1CS::<_, SM>::prover_third_round(
+             &verifier_first_message,
+             &verifier_second_msg,
+@@ -534,6 +544,7 @@ where
+         )?;
+ 
+         let third_round_comm_time = start_timer!(|| "Committing to third round polys");
++        crate::proving_debug::stage(141);
+         let (third_commitments, third_commitment_randomnesses) = SonicKZG10::<E, FS>::commit(
+             universal_prover,
+             &committer_key,
+@@ -541,6 +552,7 @@ where
+             SM::ZK.then_some(zk_rng),
+         )?;
+         end_timer!(third_round_comm_time);
++        crate::proving_debug::stage(142);
+ 
+         match varuna_version {
+             VarunaVersion::V1 => {
+@@ -578,8 +590,10 @@ where
+         // --------------------------------------------------------------------
+         // Fourth round
+ 
++        crate::proving_debug::stage(150);
+         let (prover_fourth_message, fourth_oracles, mut prover_state) =
+             AHPForR1CS::<_, SM>::prover_fourth_round(&verifier_second_msg, &verifier_third_msg, prover_state, zk_rng)?;
++        crate::proving_debug::stage(151);
+ 
+         let fourth_round_comm_time = start_timer!(|| "Committing to fourth round polys");
+         let (fourth_commitments, fourth_commitment_randomnesses) = SonicKZG10::<E, FS>::commit(
+@@ -589,6 +603,7 @@ where
+             SM::ZK.then_some(zk_rng),
+         )?;
+         end_timer!(fourth_round_comm_time);
++        crate::proving_debug::stage(152);
+ 
+         Self::absorb_labeled_with_sums(&fourth_commitments, &prover_fourth_message.sums, &mut sponge);
+ 
+@@ -605,7 +620,9 @@ where
+ 
+         // --------------------------------------------------------------------
+         // Fifth round
++        crate::proving_debug::stage(160);
+         let fifth_oracles = AHPForR1CS::<_, SM>::prover_fifth_round(verifier_fourth_msg, prover_state, zk_rng)?;
++        crate::proving_debug::stage(161);
+ 
+         let fifth_round_comm_time = start_timer!(|| "Committing to fifth round polys");
+         let (fifth_commitments, fifth_commitment_randomnesses) = SonicKZG10::<E, FS>::commit(
+@@ -615,6 +632,7 @@ where
+             SM::ZK.then_some(zk_rng),
+         )?;
+         end_timer!(fifth_round_comm_time);
++        crate::proving_debug::stage(162);
+ 
+         Self::absorb_labeled(&fifth_commitments, &mut sponge);
+ 
+@@ -687,6 +705,7 @@ where
+         // Compute the AHP verifier's query set.
+         let (query_set, verifier_state) = AHPForR1CS::<_, SM>::verifier_query_set(verifier_state);
+         dev_println!("Final challenge gamma: {:?}", verifier_state.gamma);
++        crate::proving_debug::stage(170);
+         let lc_s = AHPForR1CS::<_, SM>::construct_linear_combinations(
+             &public_inputs,
+             &polynomials,
+@@ -711,6 +730,7 @@ where
+ 
+         sponge.absorb_nonnative_field_elements(evaluations.to_field_elements());
+ 
++        crate::proving_debug::stage(180);
+         let pc_proof = SonicKZG10::<E, FS>::open_combinations(
+             universal_prover,
+             &committer_key,
+@@ -732,6 +752,7 @@ where
+         proof.check_batch_sizes()?;
+         ensure!(proof.pc_proof.is_hiding() == SM::ZK);
+ 
++        crate::proving_debug::stage(190);
+         end_timer!(prover_time);
+         Ok(proof)
+     }
+diff --git a/console/src/lib.rs b/console/src/lib.rs
+index 3819c874a..86c6d697d 100644
+--- a/console/src/lib.rs
++++ b/console/src/lib.rs
+@@ -43,5 +43,5 @@ pub mod prelude {
+     pub use crate::network::prelude::*;
+ }
+ 
+-#[cfg(all(feature = "filesystem", target_arch = "wasm32"))]
++#[cfg(all(feature = "filesystem", any(target_arch = "wasm32", target_arch = "wasm64")))]
+ compile_error!("Filesystem feature is not supported on wasm32");
+diff --git a/ledger/query/Cargo.toml b/ledger/query/Cargo.toml
+index 3ce7b3504..62e254ec0 100644
+--- a/ledger/query/Cargo.toml
++++ b/ledger/query/Cargo.toml
+@@ -77,12 +77,12 @@ default-features = false
+ features = ["json", "rustls"]
+ optional = true
+ 
+-[target.'cfg(target_arch="wasm32")'.dependencies.ureq]
++[target.'cfg(any(target_arch="wasm32", target_arch="wasm64"))'.dependencies.ureq]
+ workspace = true
+ features = ["json", "gzip"]
+ optional = true
+ 
+-[target.'cfg(not(target_arch="wasm32"))'.dependencies.ureq]
++[target.'cfg(not(any(target_arch="wasm32", target_arch="wasm64")))'.dependencies.ureq]
+ workspace = true
+ features = ["json", "gzip", "rustls"]
+ optional = true
+diff --git a/ledger/query/src/query/rest.rs b/ledger/query/src/query/rest.rs
+index f12077364..2c8c23fb0 100644
+--- a/ledger/query/src/query/rest.rs
++++ b/ledger/query/src/query/rest.rs
+@@ -98,7 +98,7 @@ impl<N: Network> RestQuery<N> {
+         let builder = reqwest::Client::builder();
+         // reqwest's wasm `ClientBuilder` has neither method (the browser owns the connection);
+         // the total bound is set per request, which both backends support.
+-        #[cfg(not(target_arch = "wasm32"))]
++        #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+         let builder = builder.connect_timeout(self.connect).read_timeout(self.stall);
+         let built = builder.build().with_context(|| format!("Failed to build an HTTP client for {}", self.base_url))?;
+         Ok(self.client.get_or_init(|| built))
+@@ -283,14 +283,14 @@ impl<N: Network> RestQuery<N> {
+     }
+ 
+     /// What is left of the total bound for a request that started at `started`.
+-    #[cfg(not(target_arch = "wasm32"))]
++    #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+     fn remaining(&self, started: std::time::Instant) -> Duration {
+         self.total.saturating_sub(started.elapsed())
+     }
+ 
+     /// Calls `endpoint`, asking once more if the request was lost on a pooled connection the peer
+     /// had closed; the second attempt gets only what is left of the total bound.
+-    #[cfg(not(target_arch = "wasm32"))]
++    #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+     fn call(&self, endpoint: &str) -> Result<ureq::http::Response<ureq::Body>, ureq::Error> {
+         let started = std::time::Instant::now();
+         match self.agent.get(endpoint).call() {
+@@ -302,7 +302,7 @@ impl<N: Network> RestQuery<N> {
+     }
+ 
+     /// On wasm there is no clock to budget a retry with, and no connection pool to lose one on.
+-    #[cfg(target_arch = "wasm32")]
++    #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
+     fn call(&self, endpoint: &str) -> Result<ureq::http::Response<ureq::Body>, ureq::Error> {
+         self.agent.get(endpoint).call()
+     }
+@@ -353,7 +353,7 @@ impl<N: Network> RestQuery<N> {
+ 
+     /// Async counterpart of [`Self::call`]. hyper-util retries only a request it never began
+     /// writing; one written to a closed pooled socket surfaces as a plain request error.
+-    #[cfg(all(feature = "async", not(target_arch = "wasm32")))]
++    #[cfg(all(feature = "async", not(any(target_arch = "wasm32", target_arch = "wasm64"))))]
+     async fn send(&self, endpoint: &str) -> Result<reqwest::Response> {
+         let started = std::time::Instant::now();
+         match self.request(endpoint, self.total)?.send().await {
+@@ -365,7 +365,7 @@ impl<N: Network> RestQuery<N> {
+     }
+ 
+     /// On wasm the browser owns the connection, and there is no clock to budget a retry with.
+-    #[cfg(all(feature = "async", target_arch = "wasm32"))]
++    #[cfg(all(feature = "async", any(target_arch = "wasm32", target_arch = "wasm64")))]
+     async fn send(&self, endpoint: &str) -> Result<reqwest::Response> {
+         Ok(self.request(endpoint, self.total)?.send().await?)
+     }
+diff --git a/utilities/src/parallel.rs b/utilities/src/parallel.rs
+index 9c62dcc6b..c00d06ccf 100644
+--- a/utilities/src/parallel.rs
++++ b/utilities/src/parallel.rs
+@@ -34,15 +34,159 @@ impl<'a, T> ExecutionPool<'a, T> {
+     where
+         T: Send + Sync,
+     {
++        // Preserve inner FFT/MSM parallelism while limiting simultaneous temporary buffers.
++        if proving_debug::memory_mode() >= 1 {
++            return self.jobs.into_iter().map(proving_debug::run_job).collect();
++        }
+         #[cfg(not(feature = "serial"))]
+         {
+             use rayon::prelude::*;
+-            execute_with_max_available_threads(|| self.jobs.into_par_iter().map(|f| f()).collect())
++            execute_with_max_available_threads(|| self.jobs.into_par_iter().map(proving_debug::run_job).collect())
+         }
+         #[cfg(feature = "serial")]
+         {
+-            self.jobs.into_iter().map(|f| f()).collect()
++            self.jobs.into_iter().map(proving_debug::run_job).collect()
++        }
++    }
++}
++
++/// Public, non-secret counters for the isolated proving memory experiment.
++pub mod proving_debug {
++    use std::sync::atomic::{AtomicUsize, Ordering};
++
++    pub const MAGIC: u32 = 0x53485044;
++    pub const VERSION: u32 = 3;
++    pub const WORDS: usize = 16;
++    pub const MODE: usize = 2;
++    pub const STAGE: usize = 3;
++    pub const STAGE_SEQUENCE: usize = 4;
++    pub const JOBS_STARTED: usize = 5;
++    pub const JOBS_COMPLETED: usize = 6;
++    pub const JOBS_ACTIVE: usize = 7;
++    pub const ALLOCATED: usize = 8;
++    pub const PEAK_ALLOCATED: usize = 9;
++    pub const ALLOCATION_FAILURES: usize = 10;
++    pub const LAST_FAILED_ALLOCATION: usize = 11;
++    pub const ALLOCATION_COUNT: usize = 12;
++    pub const DEALLOCATION_COUNT: usize = 13;
++    pub const REALLOCATION_COUNT: usize = 14;
++    pub const MSM_WINDOWS_ACTIVE: usize = 15;
++
++    pub static COUNTERS: [AtomicUsize; WORDS] = [
++        AtomicUsize::new(MAGIC as usize),
++        AtomicUsize::new(VERSION as usize),
++        AtomicUsize::new(0),
++        AtomicUsize::new(0),
++        AtomicUsize::new(0),
++        AtomicUsize::new(0),
++        AtomicUsize::new(0),
++        AtomicUsize::new(0),
++        AtomicUsize::new(0),
++        AtomicUsize::new(0),
++        AtomicUsize::new(0),
++        AtomicUsize::new(0),
++        AtomicUsize::new(0),
++        AtomicUsize::new(0),
++        AtomicUsize::new(0),
++        AtomicUsize::new(0),
++    ];
++
++    pub fn memory_mode() -> u32 {
++        COUNTERS[MODE].load(Ordering::Relaxed) as u32
++    }
++
++    pub fn set_memory_mode(mode: u32) {
++        COUNTERS[MODE].store(mode as usize, Ordering::Relaxed);
++    }
++
++    pub fn stage(stage: u32) {
++        COUNTERS[STAGE].store(stage as usize, Ordering::Release);
++        COUNTERS[STAGE_SEQUENCE].fetch_add(1, Ordering::Release);
++    }
++
++    pub fn run_job<T>(job: impl FnOnce() -> T) -> T {
++        struct ActiveJob;
++        impl Drop for ActiveJob {
++            fn drop(&mut self) {
++                COUNTERS[JOBS_ACTIVE].fetch_sub(1, Ordering::Relaxed);
++            }
++        }
++        COUNTERS[JOBS_STARTED].fetch_add(1, Ordering::Relaxed);
++        COUNTERS[JOBS_ACTIVE].fetch_add(1, Ordering::Relaxed);
++        let guard = ActiveJob;
++        let result = job();
++        COUNTERS[JOBS_COMPLETED].fetch_add(1, Ordering::Relaxed);
++        drop(guard);
++        result
++    }
++
++    pub fn run_msm_window<T>(window: impl FnOnce() -> T) -> T {
++        struct ActiveWindow;
++        impl Drop for ActiveWindow {
++            fn drop(&mut self) {
++                COUNTERS[MSM_WINDOWS_ACTIVE].fetch_sub(1, Ordering::Relaxed);
++            }
++        }
++        COUNTERS[MSM_WINDOWS_ACTIVE].fetch_add(1, Ordering::Relaxed);
++        let guard = ActiveWindow;
++        let result = window();
++        drop(guard);
++        result
++    }
++
++    pub fn allocated(size: usize) {
++        let total = COUNTERS[ALLOCATED].fetch_add(size, Ordering::Relaxed) + size;
++        COUNTERS[PEAK_ALLOCATED].fetch_max(total, Ordering::Relaxed);
++    }
++
++    pub fn deallocated(size: usize) {
++        COUNTERS[ALLOCATED].fetch_sub(size, Ordering::Relaxed);
++    }
++
++    pub fn allocation_failed(size: usize) {
++        COUNTERS[ALLOCATION_FAILURES].fetch_add(1, Ordering::Relaxed);
++        COUNTERS[LAST_FAILED_ALLOCATION].store(size, Ordering::Relaxed);
++    }
++}
++
++#[cfg(test)]
++mod proving_memory_tests {
++    use super::{ExecutionPool, proving_debug};
++
++    #[test]
++    #[cfg(target_pointer_width = "64")]
++    fn allocation_counters_preserve_sizes_above_four_gib() {
++        use proving_debug::*;
++        use std::sync::atomic::Ordering;
++
++        let saved = COUNTERS.each_ref().map(|word| word.load(Ordering::Relaxed));
++        let amount = u32::MAX as usize + 4097;
++        allocated(amount);
++        assert_eq!(COUNTERS[ALLOCATED].load(Ordering::Relaxed) as u64, saved[ALLOCATED] as u64 + amount as u64);
++        assert!(COUNTERS[PEAK_ALLOCATED].load(Ordering::Relaxed) as u64 >= amount as u64);
++        allocation_failed(amount);
++        assert_eq!(COUNTERS[LAST_FAILED_ALLOCATION].load(Ordering::Relaxed) as u64, amount as u64);
++        deallocated(amount);
++        assert_eq!(COUNTERS[ALLOCATED].load(Ordering::Relaxed), saved[ALLOCATED]);
++        for (word, value) in COUNTERS.iter().zip(saved) {
++            word.store(value, Ordering::Relaxed);
++        }
++    }
++
++    #[test]
++    fn sequential_outer_jobs_keep_order_and_run_on_calling_thread() {
++        let caller = std::thread::current().id();
++        let mut pool = ExecutionPool::with_capacity(8);
++        for value in 0..8 {
++            pool.add_job(move || {
++                assert_eq!(std::thread::current().id(), caller);
++                value * value
++            });
+         }
++        proving_debug::set_memory_mode(1);
++        let result = pool.execute_all();
++        proving_debug::set_memory_mode(0);
++        assert_eq!(result, (0..8).map(|value| value * value).collect::<Vec<_>>());
+     }
+ }
+ 

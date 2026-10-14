@@ -1,0 +1,479 @@
+{
+  "version": 1,
+  "date": "2026-10-14",
+  "cases": [
+    {
+      "label": "wasm64-single-functional",
+      "report": "dist/proving-lab-wasm64-warm/result-2026-10-14T20-58-48-166Z-baseline-1.json",
+      "reportSha256": "32df763b162113e803edea624da67adb1b542d148b56b41e927a045bb9b76437",
+      "outcome": "built",
+      "sdkExecutionAndFeeVerified": true,
+      "broadcast": false,
+      "threads": 1,
+      "singleThread": true,
+      "pointerBytes": 8,
+      "wasmBindgen": "0.2.129",
+      "elapsedSeconds": 1146.17,
+      "phaseSeconds": {
+        "initialize-mainnet-pool": 0.013,
+        "preflight-program-metadata": 1.071,
+        "preflight-record-inclusion": 1.138,
+        "preload-inclusion-key": 8.571,
+        "sdk-build-execution-transaction": 5.732,
+        "sdk-load-program": 12.167,
+        "execution-authorization": 11.322,
+        "execution-and-key-synthesis": 144.655,
+        "execution-inclusion": 0.798,
+        "execution-proof": 764.62,
+        "execution-fee-calculation": 0.241,
+        "fee-authorization": 0.462,
+        "fee-execution": 0.449,
+        "fee-inclusion": 0.612,
+        "fee-proof": 193.144,
+        "fee-verification": 0.358,
+        "transaction-serialization": 0.164,
+        "serialize-built-transaction": 0.405
+      },
+      "peakLinearBytes": 3975020544,
+      "peakRequestedAllocationBytes": 3840272819,
+      "failedAllocations": 0,
+      "peakSampledRendererRssBytes": 3652829184,
+      "rendererCpuSeconds": 975.57,
+      "peakSampledRendererCpuPercent": 110.6,
+      "maxActiveOuterJobs": 2,
+      "maxActiveMsmWindows": 1,
+      "contendedByOtherLabProofsOrBuilds": true,
+      "keyCacheBefore": {
+        "entries": 12,
+        "bytes": 1036723026
+      },
+      "keyCacheMethods": {
+        "getKeyBytes": {
+          "completed": 12,
+          "failed": 0,
+          "durationMs": 1608,
+          "hits": 12,
+          "misses": 0,
+          "bytes": 1036723026
+        },
+        "getProvingKey": {
+          "completed": 6,
+          "failed": 0,
+          "durationMs": 10585,
+          "hits": 6,
+          "misses": 0,
+          "bytes": 0
+        },
+        "getVerifyingKey": {
+          "completed": 6,
+          "failed": 0,
+          "durationMs": 61,
+          "hits": 6,
+          "misses": 0,
+          "bytes": 0
+        }
+      },
+      "fixture": {
+        "source": "amm-v3-monorepo",
+        "ammRevision": "ccc34625e7e1475236bde681f375ff474aee9f9f",
+        "quoteSource": "live-chain-pool-with-explicit-test-minimum",
+        "program": "shield_swap_router.aleo",
+        "function": "swap_from_wrapped",
+        "privateFee": true,
+        "sha256": "079286909cafdfa4967d7c43da53fbe191f08325ea501fd000f63031295fea5f"
+      },
+      "artifacts": {
+        "sha256": "465356d6199b7cb9f24b2272af238ce97439f40aa6e9446730a6f611135aadcd",
+        "sdkBrowserSha256": "c852c5fe821c3a26d0ceb65d88f10cb085d320bbb1f17e6d1ec4b0852bcb7da9",
+        "workerBundleSha256": "287b02770a3351e6410bd2b15c23f423c51bd81682998ea026920dc6d8a9716b",
+        "instrumentedRayonWorkerSha256": "7ef4c5724ee92b2f049d79c209a3a339cee04d05266c7e1f5d49bedc4d04e40f"
+      },
+      "host": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "cpu": "Apple M2",
+        "logicalCpus": 8,
+        "memoryBytes": 25769803776
+      },
+      "browserVersion": "148.0.7778.96",
+      "parametersServedLocally": [
+        {
+          "url": "https://parameters.provable.com/mainnet/inclusion.prover.9fe710f",
+          "sha256": "9fe710fa8f9e85a33e706be93099225b06ee56ce0d951fde0f64b9b7b79d2109",
+          "bytes": 233828980
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/fee_public.prover.d967fc6",
+          "sha256": "d967fc683af43a0a01817283af05181f9f8277c49351ca664a642b0eb9ec9363",
+          "bytes": 29174402
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/fee_private.prover.67f8357",
+          "sha256": "67f8357bf41a277ad571883063d4f2af9cc17433ccda15918ec664ab99727c6a",
+          "bytes": 74357532
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/powers-of-beta-17.usrs.7c27308",
+          "sha256": "7c27308fddb11be496e4dd43ee4ae2adb31051b715bb7c0c48656a9be6fec676",
+          "bytes": 6291464
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/powers-of-beta-18.usrs.7a12bcb",
+          "sha256": "7a12bcb6de982aa3010dde16a7be73ec399a46717b37ea189112ef14f4c88cca",
+          "bytes": 12582920
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/powers-of-beta-19.usrs.e535d44",
+          "sha256": "e535d44614ef8e667ac39132cad61516dc4dcbce62d74c396b670b21c9b4e16a",
+          "bytes": 25165832
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/powers-of-beta-20.usrs.3daad5e",
+          "sha256": "3daad5ed5b5b7108b46bf1d0639a0d6e06deee4c784730ec9672e8cf1184e923",
+          "bytes": 50331656
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/shifted-powers-of-beta-17.usrs.2025178",
+          "sha256": "20251789535c798606a205d04dea8a3a46a2c79e4e7f450e48a99285112bef6c",
+          "bytes": 6291464
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/shifted-powers-of-beta-18.usrs.9a1859e",
+          "sha256": "9a1859e01968284239e3ca3e33246a6a1af35aee1ccc82990ff5af4c3b50cac4",
+          "bytes": 12582920
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/shifted-powers-of-beta-19.usrs.662e343",
+          "sha256": "662e3437feba9da7d1206f4cfa9297c2835124a639c9f6c5ce3e0da81f55658c",
+          "bytes": 25165832
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/shifted-powers-of-beta-20.usrs.dbb509d",
+          "sha256": "dbb509d0889c61f1b5f6e1cc3b3e8b7f9c9d4f7741efedcb3b76cf462d94e698",
+          "bytes": 50331656
+        }
+      ]
+    },
+    {
+      "label": "wasm64-threaded-warm",
+      "report": "dist/proving-lab-wasm64-threads-warm/result-2026-10-14T21-21-03-420Z-baseline-6.json",
+      "reportSha256": "1981b1313304eb3e352471d38493fc7076352a4a1f6fcd8052401e1e6eb18ef7",
+      "outcome": "built",
+      "sdkExecutionAndFeeVerified": true,
+      "broadcast": false,
+      "threads": 6,
+      "singleThread": false,
+      "pointerBytes": 8,
+      "wasmBindgen": "0.2.129-local-threading",
+      "elapsedSeconds": 221.628,
+      "phaseSeconds": {
+        "initialize-mainnet-pool": 0.064,
+        "preflight-program-metadata": 0.907,
+        "preflight-record-inclusion": 0.792,
+        "preload-inclusion-key": 6.749,
+        "sdk-build-execution-transaction": 5.771,
+        "sdk-load-program": 8.077,
+        "execution-authorization": 7.991,
+        "execution-and-key-synthesis": 22.276,
+        "execution-inclusion": 0.774,
+        "execution-proof": 124.08,
+        "execution-fee-calculation": 0.186,
+        "fee-authorization": 0.42,
+        "fee-execution": 0.407,
+        "fee-inclusion": 0.547,
+        "fee-proof": 41.109,
+        "fee-verification": 0.264,
+        "transaction-serialization": 0.072,
+        "serialize-built-transaction": 0.95
+      },
+      "peakLinearBytes": 4388749312,
+      "peakRequestedAllocationBytes": 4201612604,
+      "failedAllocations": 0,
+      "peakSampledRendererRssBytes": 5098749952,
+      "rendererCpuSeconds": 1014.39,
+      "peakSampledRendererCpuPercent": 589.5,
+      "maxActiveOuterJobs": 18,
+      "maxActiveMsmWindows": 6,
+      "contendedByOtherLabProofsOrBuilds": false,
+      "keyCacheBefore": {
+        "entries": 12,
+        "bytes": 1036723026
+      },
+      "keyCacheMethods": {
+        "getKeyBytes": {
+          "completed": 12,
+          "failed": 0,
+          "durationMs": 841,
+          "hits": 12,
+          "misses": 0,
+          "bytes": 1036723026
+        },
+        "getProvingKey": {
+          "completed": 6,
+          "failed": 0,
+          "durationMs": 7472,
+          "hits": 6,
+          "misses": 0,
+          "bytes": 0
+        },
+        "getVerifyingKey": {
+          "completed": 6,
+          "failed": 0,
+          "durationMs": 38,
+          "hits": 6,
+          "misses": 0,
+          "bytes": 0
+        }
+      },
+      "fixture": {
+        "source": "amm-v3-monorepo",
+        "ammRevision": "ccc34625e7e1475236bde681f375ff474aee9f9f",
+        "quoteSource": "live-chain-pool-with-explicit-test-minimum",
+        "program": "shield_swap_router.aleo",
+        "function": "swap_from_wrapped",
+        "privateFee": true,
+        "sha256": "079286909cafdfa4967d7c43da53fbe191f08325ea501fd000f63031295fea5f"
+      },
+      "artifacts": {
+        "sha256": "7dbf50d3c2677364924ebe40bba82e636a61bc5ebce48d16d72d8573c2b9bd39",
+        "sdkBrowserSha256": "c852c5fe821c3a26d0ceb65d88f10cb085d320bbb1f17e6d1ec4b0852bcb7da9",
+        "workerBundleSha256": "23f325c4a9081a29d519d97451563b91b164dd3ce3cff12edfd0d9ded7c39c0b",
+        "instrumentedRayonWorkerSha256": "bc1fbd733fa3b979d75f560a39d6b278f80ba6998f7f87236378c5105f41e36c"
+      },
+      "host": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "cpu": "Apple M2",
+        "logicalCpus": 8,
+        "memoryBytes": 25769803776
+      },
+      "browserVersion": "148.0.7778.96",
+      "parametersServedLocally": [
+        {
+          "url": "https://parameters.provable.com/mainnet/inclusion.prover.9fe710f",
+          "sha256": "9fe710fa8f9e85a33e706be93099225b06ee56ce0d951fde0f64b9b7b79d2109",
+          "bytes": 233828980
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/fee_public.prover.d967fc6",
+          "sha256": "d967fc683af43a0a01817283af05181f9f8277c49351ca664a642b0eb9ec9363",
+          "bytes": 29174402
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/fee_private.prover.67f8357",
+          "sha256": "67f8357bf41a277ad571883063d4f2af9cc17433ccda15918ec664ab99727c6a",
+          "bytes": 74357532
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/powers-of-beta-17.usrs.7c27308",
+          "sha256": "7c27308fddb11be496e4dd43ee4ae2adb31051b715bb7c0c48656a9be6fec676",
+          "bytes": 6291464
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/powers-of-beta-18.usrs.7a12bcb",
+          "sha256": "7a12bcb6de982aa3010dde16a7be73ec399a46717b37ea189112ef14f4c88cca",
+          "bytes": 12582920
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/powers-of-beta-19.usrs.e535d44",
+          "sha256": "e535d44614ef8e667ac39132cad61516dc4dcbce62d74c396b670b21c9b4e16a",
+          "bytes": 25165832
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/powers-of-beta-20.usrs.3daad5e",
+          "sha256": "3daad5ed5b5b7108b46bf1d0639a0d6e06deee4c784730ec9672e8cf1184e923",
+          "bytes": 50331656
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/shifted-powers-of-beta-17.usrs.2025178",
+          "sha256": "20251789535c798606a205d04dea8a3a46a2c79e4e7f450e48a99285112bef6c",
+          "bytes": 6291464
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/shifted-powers-of-beta-18.usrs.9a1859e",
+          "sha256": "9a1859e01968284239e3ca3e33246a6a1af35aee1ccc82990ff5af4c3b50cac4",
+          "bytes": 12582920
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/shifted-powers-of-beta-19.usrs.662e343",
+          "sha256": "662e3437feba9da7d1206f4cfa9297c2835124a639c9f6c5ce3e0da81f55658c",
+          "bytes": 25165832
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/shifted-powers-of-beta-20.usrs.dbb509d",
+          "sha256": "dbb509d0889c61f1b5f6e1cc3b3e8b7f9c9d4f7741efedcb3b76cf462d94e698",
+          "bytes": 50331656
+        }
+      ]
+    },
+    {
+      "label": "wasm32-threaded-reference",
+      "report": "dist/proving-lab-wasm32-reference-warm/result-2026-10-14T21-25-10-169Z-baseline-6.json",
+      "reportSha256": "82c50cead24ed4f96810cd5b6412098f839203b949a449cef213b727362a4bd9",
+      "outcome": "built",
+      "sdkExecutionAndFeeVerified": true,
+      "broadcast": false,
+      "threads": 6,
+      "singleThread": false,
+      "pointerBytes": 4,
+      "wasmBindgen": "0.2.105",
+      "elapsedSeconds": 227.174,
+      "phaseSeconds": {
+        "initialize-mainnet-pool": 0.044,
+        "preflight-program-metadata": 0.658,
+        "preflight-record-inclusion": 0.855,
+        "preload-inclusion-key": 6.828,
+        "sdk-build-execution-transaction": 5.551,
+        "sdk-load-program": 8.343,
+        "execution-authorization": 8.152,
+        "execution-and-key-synthesis": 27.769,
+        "execution-inclusion": 0.638,
+        "execution-proof": 124.783,
+        "execution-fee-calculation": 0.55,
+        "fee-authorization": 0.397,
+        "fee-execution": 0.389,
+        "fee-inclusion": 0.542,
+        "fee-proof": 40.84,
+        "fee-verification": 0.257,
+        "transaction-serialization": 0.064,
+        "serialize-built-transaction": 0.349
+      },
+      "peakLinearBytes": 4260560896,
+      "peakRequestedAllocationBytes": 4069050870,
+      "failedAllocations": 0,
+      "peakSampledRendererRssBytes": 4988108800,
+      "rendererCpuSeconds": 1021.35,
+      "peakSampledRendererCpuPercent": 592.5,
+      "maxActiveOuterJobs": 18,
+      "maxActiveMsmWindows": 6,
+      "contendedByOtherLabProofsOrBuilds": false,
+      "keyCacheBefore": {
+        "entries": 12,
+        "bytes": 1036723026
+      },
+      "keyCacheMethods": {
+        "getKeyBytes": {
+          "completed": 12,
+          "failed": 0,
+          "durationMs": 855,
+          "hits": 12,
+          "misses": 0,
+          "bytes": 1036723026
+        },
+        "getProvingKey": {
+          "completed": 6,
+          "failed": 0,
+          "durationMs": 7772,
+          "hits": 6,
+          "misses": 0,
+          "bytes": 0
+        },
+        "getVerifyingKey": {
+          "completed": 6,
+          "failed": 0,
+          "durationMs": 36,
+          "hits": 6,
+          "misses": 0,
+          "bytes": 0
+        }
+      },
+      "fixture": {
+        "source": "amm-v3-monorepo",
+        "ammRevision": "ccc34625e7e1475236bde681f375ff474aee9f9f",
+        "quoteSource": "live-chain-pool-with-explicit-test-minimum",
+        "program": "shield_swap_router.aleo",
+        "function": "swap_from_wrapped",
+        "privateFee": true,
+        "sha256": "079286909cafdfa4967d7c43da53fbe191f08325ea501fd000f63031295fea5f"
+      },
+      "artifacts": {
+        "sha256": "b1fe74b6a621f972ed23ed1c090b55390bc20db9cbd60e15e02cc0d876715dc4",
+        "sdkBrowserSha256": "c852c5fe821c3a26d0ceb65d88f10cb085d320bbb1f17e6d1ec4b0852bcb7da9",
+        "workerBundleSha256": "23f325c4a9081a29d519d97451563b91b164dd3ce3cff12edfd0d9ded7c39c0b",
+        "instrumentedRayonWorkerSha256": "8ec0ab3cc3841839b3315ea22e15ef838aab50787bf81456efb2426f80bc8b77"
+      },
+      "host": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "cpu": "Apple M2",
+        "logicalCpus": 8,
+        "memoryBytes": 25769803776
+      },
+      "browserVersion": "148.0.7778.96",
+      "parametersServedLocally": [
+        {
+          "url": "https://parameters.provable.com/mainnet/inclusion.prover.9fe710f",
+          "sha256": "9fe710fa8f9e85a33e706be93099225b06ee56ce0d951fde0f64b9b7b79d2109",
+          "bytes": 233828980
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/fee_public.prover.d967fc6",
+          "sha256": "d967fc683af43a0a01817283af05181f9f8277c49351ca664a642b0eb9ec9363",
+          "bytes": 29174402
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/fee_private.prover.67f8357",
+          "sha256": "67f8357bf41a277ad571883063d4f2af9cc17433ccda15918ec664ab99727c6a",
+          "bytes": 74357532
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/powers-of-beta-17.usrs.7c27308",
+          "sha256": "7c27308fddb11be496e4dd43ee4ae2adb31051b715bb7c0c48656a9be6fec676",
+          "bytes": 6291464
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/powers-of-beta-18.usrs.7a12bcb",
+          "sha256": "7a12bcb6de982aa3010dde16a7be73ec399a46717b37ea189112ef14f4c88cca",
+          "bytes": 12582920
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/powers-of-beta-19.usrs.e535d44",
+          "sha256": "e535d44614ef8e667ac39132cad61516dc4dcbce62d74c396b670b21c9b4e16a",
+          "bytes": 25165832
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/powers-of-beta-20.usrs.3daad5e",
+          "sha256": "3daad5ed5b5b7108b46bf1d0639a0d6e06deee4c784730ec9672e8cf1184e923",
+          "bytes": 50331656
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/shifted-powers-of-beta-17.usrs.2025178",
+          "sha256": "20251789535c798606a205d04dea8a3a46a2c79e4e7f450e48a99285112bef6c",
+          "bytes": 6291464
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/shifted-powers-of-beta-18.usrs.9a1859e",
+          "sha256": "9a1859e01968284239e3ca3e33246a6a1af35aee1ccc82990ff5af4c3b50cac4",
+          "bytes": 12582920
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/shifted-powers-of-beta-19.usrs.662e343",
+          "sha256": "662e3437feba9da7d1206f4cfa9297c2835124a639c9f6c5ce3e0da81f55658c",
+          "bytes": 25165832
+        },
+        {
+          "url": "https://parameters.provable.com/mainnet/shifted-powers-of-beta-20.usrs.dbb509d",
+          "sha256": "dbb509d0889c61f1b5f6e1cc3b3e8b7f9c9d4f7741efedcb3b76cf462d94e698",
+          "bytes": 50331656
+        }
+      ]
+    }
+  ],
+  "comparison": {
+    "wasm64Vs32ThreadedWallTimeRatio": 0.9755869949906238,
+    "wasm64Vs32ThreadedPeakLinearRatio": 1.0300872160095984,
+    "wasm64BytesAbove32BitLinearCap": 93782016,
+    "limitations": [
+      "One completed measured swap per package, not a statistical speedup result.",
+      "The WASM32 reference retains bindgen 0.2.105 and schema-2 diagnostics; the port uses 0.2.129 and schema 3.",
+      "The single-thread run overlapped other proving and build jobs and is excluded from clean wall-time comparisons.",
+      "All packages include diagnostics and the earlier R1 buffer change; these are not unmodified production extension packages.",
+      "Verified local public parameters remove CDN download variance; mainnet GET preflights and inclusion queries remain live."
+    ]
+  },
+  "memoryUnits": {
+    "GiB": 1073741824,
+    "MiB": 1048576
+  },
+  "privateArtifacts": "Encrypted in each original lab run directory; no plaintext transaction is included here."
+}

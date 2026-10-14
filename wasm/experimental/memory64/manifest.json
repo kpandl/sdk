@@ -1,0 +1,30 @@
+{
+  "sdk": {
+    "repository": "https://github.com/ProvableHQ/sdk.git",
+    "revision": "6fca0da897ce85baff3890d287ebfc7d9b518ffa",
+    "directory": "sdk-proving-wasm64",
+    "patch": "sdk-v0.12.1.patch"
+  },
+  "snarkvm": {
+    "repository": "https://github.com/ProvableHQ/snarkVM.git",
+    "revision": "56b6c6025c96cc1e36aacdb8edc008a910f8ba9e",
+    "directory": "snarkVM-proving-wasm64",
+    "patch": "snarkvm-v4.12.0.patch"
+  },
+  "wasm-bindgen": {
+    "repository": "https://github.com/wasm-bindgen/wasm-bindgen.git",
+    "revision": "165586f854c852bcbc4d14d8a75a0a0e0d0abc12",
+    "directory": "wasm64-proving-dependencies/wasm-bindgen-threading",
+    "patch": "wasm-bindgen-0.2.129.patch"
+  },
+  "patchSha256": {
+    "dirs-4.0.0.patch": "7963e32994d2d5c0c6bf353d288b51cbb719c64587293f005f2399b8dd0fbe8c",
+    "getrandom-0.4.2.patch": "6730eff17158a8942c204a3f0dc2f515f8d292a7181567aa89de6730215b2976",
+    "reqwest-0.11.27.patch": "9981e1ecdfb328d5178963094f0dd3b38c78483a3eb62b6e4d45378bc8a6631f",
+    "reqwest-0.13.2.patch": "7fc91c67c6db862ad830f638049a9fd6fa241e59d8f2632f9c4e6347ba61e392",
+    "sdk-v0.12.1.patch": "a835c04016e93cdfb3b583784fbba8af425488c9115dee3871e40b8aee4cd26f",
+    "snarkvm-v4.12.0.patch": "947a8b32a7c5a67d910a30df39cb30033db81b6336ff1dc9af09c3cdf436245b",
+    "wasm-bindgen-0.2.129.patch": "b94ee76629663f3d94c366ae6e5c86f74f6a2c475a6baf496642aec563db824a"
+  },
+  "wasmBindgenLockSha256": "5e72b94e82cd594e7e56b736789f554fd2d2e695ee7a99bcb9d00a2241715426"
+}

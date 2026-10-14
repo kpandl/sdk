@@ -1,0 +1,293 @@
+{
+  "mainnet-single32": {
+    "diagnosticBuild": "wasm32-single",
+    "sdkVersion": "0.12.1",
+    "snarkvmVersion": "4.12.0",
+    "sdkRevision": "6fca0da897ce85baff3890d287ebfc7d9b518ffa",
+    "snarkvmRevision": "56b6c6025c96cc1e36aacdb8edc008a910f8ba9e",
+    "target": "wasm32-unknown-unknown",
+    "pointerBytes": 4,
+    "counterWordBytes": 4,
+    "counterSchema": 3,
+    "sharedMemory": false,
+    "threads": 1,
+    "maximumBytes": 4294967296,
+    "toolchain": "nightly-2026-04-02",
+    "wasmBindgen": "0.2.129",
+    "binaryen": "125",
+    "profile": {
+      "optLevel": 3,
+      "lto": true,
+      "codegenUnits": 1,
+      "panic": "abort"
+    },
+    "cargoLockSha256": "39fae290adeb0f1884cc2582ab29b548f3ec34f7f4a802977dcab6e764b507c4",
+    "buildScriptSha256": "1b6808c28a74a41c63e671e4588562db359d7ca57105761db63b4ad2ead4bdd7",
+    "elapsedMs": 979272,
+    "artifacts": {
+      "aleo_wasm.wasm": {
+        "bytes": 20993532,
+        "sha256": "b8d69f9e670ace2a26339a5f8eaa421cfb1e16099ef0005399bc00857aec7fb8"
+      },
+      "aleo_wasm.js": {
+        "bytes": 537559,
+        "sha256": "2d41eae6684ddcf68c96e9c61c8b46a14e78d3ba7580241b5d939fef6b956965"
+      },
+      "index.js": {
+        "bytes": 406,
+        "sha256": "1714d56861d174595895d85ad267f7c11c7a401a1e7b9d3804234bb6b1a82a33"
+      },
+      "worker.js": {
+        "bytes": 80,
+        "sha256": "7ef4c5724ee92b2f049d79c209a3a339cee04d05266c7e1f5d49bedc4d04e40f"
+      }
+    }
+  },
+  "mainnet-single64": {
+    "diagnosticBuild": "wasm64-single",
+    "sdkVersion": "0.12.1",
+    "snarkvmVersion": "4.12.0",
+    "sdkRevision": "6fca0da897ce85baff3890d287ebfc7d9b518ffa",
+    "snarkvmRevision": "56b6c6025c96cc1e36aacdb8edc008a910f8ba9e",
+    "target": "wasm64-unknown-unknown",
+    "pointerBytes": 8,
+    "counterWordBytes": 8,
+    "counterSchema": 3,
+    "sharedMemory": false,
+    "threads": 1,
+    "maximumBytes": 8589934592,
+    "toolchain": "nightly-2026-04-02",
+    "wasmBindgen": "0.2.129",
+    "binaryen": "125",
+    "profile": {
+      "optLevel": 3,
+      "lto": true,
+      "codegenUnits": 1,
+      "panic": "abort"
+    },
+    "cargoLockSha256": "39fae290adeb0f1884cc2582ab29b548f3ec34f7f4a802977dcab6e764b507c4",
+    "buildScriptSha256": "1b6808c28a74a41c63e671e4588562db359d7ca57105761db63b4ad2ead4bdd7",
+    "elapsedMs": 994927,
+    "artifacts": {
+      "aleo_wasm.wasm": {
+        "bytes": 21128272,
+        "sha256": "1c6aad7a0d3f2bce0b02543f47b31674c1f5bcce0d5e4824b538a8f03cab5270"
+      },
+      "aleo_wasm.js": {
+        "bytes": 536627,
+        "sha256": "8147f46ffbb46e96f98736998a5786612a7206b871dc6a6ff943321d41211fd7"
+      },
+      "index.js": {
+        "bytes": 406,
+        "sha256": "1714d56861d174595895d85ad267f7c11c7a401a1e7b9d3804234bb6b1a82a33"
+      },
+      "worker.js": {
+        "bytes": 80,
+        "sha256": "7ef4c5724ee92b2f049d79c209a3a339cee04d05266c7e1f5d49bedc4d04e40f"
+      }
+    }
+  },
+  "mainnet-threads64": {
+    "diagnosticBuild": "wasm64-experimental-threads",
+    "sdkVersion": "0.12.1",
+    "snarkvmVersion": "4.12.0",
+    "sdkRevision": "6fca0da897ce85baff3890d287ebfc7d9b518ffa",
+    "snarkvmRevision": "56b6c6025c96cc1e36aacdb8edc008a910f8ba9e",
+    "target": "wasm64-unknown-unknown",
+    "pointerBytes": 8,
+    "counterWordBytes": 8,
+    "counterSchema": 3,
+    "sharedMemory": true,
+    "threads": "caller-selected",
+    "maximumBytes": 8589934592,
+    "toolchain": "nightly-2026-04-02",
+    "wasmBindgen": "0.2.129",
+    "binaryen": "125",
+    "profile": {
+      "optLevel": 3,
+      "lto": true,
+      "codegenUnits": 1,
+      "panic": "abort"
+    },
+    "cargoLockSha256": "39fae290adeb0f1884cc2582ab29b548f3ec34f7f4a802977dcab6e764b507c4",
+    "buildScriptSha256": "4101d5d2d8dc432470cfd88361c5190f5c423e0c3bb47db88a0c0439e3e4b541",
+    "elapsedMs": 521981,
+    "artifacts": {
+      "aleo_wasm.wasm": {
+        "bytes": 22732461,
+        "sha256": "7dbf50d3c2677364924ebe40bba82e636a61bc5ebce48d16d72d8573c2b9bd39"
+      },
+      "aleo_wasm.js": {
+        "bytes": 543008,
+        "sha256": "8daa58750ee5154caee9f7dd03a6f345a13b1dd1daef86fc5849f6da43957e04"
+      },
+      "index.js": {
+        "bytes": 564,
+        "sha256": "90762cffa6da6e59f80f3b53e14a26a49dd8ce2cae2f1c9989fd0c4da4701518"
+      },
+      "worker.js": {
+        "bytes": 1108,
+        "sha256": "aa06488b383483ea925f619cc6ebf7cbdbe5b764a194cb188bbc3ad7a8880465"
+      }
+    },
+    "toolchainThreading": "local experimental wasm-bindgen Memory64 thread transform",
+    "toolchainSourceProvenance": "source-provenance.json"
+  },
+  "wasm32-threaded-reference": {
+    "sdkVersion": "0.12.1",
+    "sdkRevision": "6fca0da897ce85baff3890d287ebfc7d9b518ffa",
+    "snarkvmVersion": "4.12.0",
+    "snarkvmRevision": "56b6c6025c96cc1e36aacdb8edc008a910f8ba9e",
+    "diagnosticBuild": "srs-sharing-4.12",
+    "counterSchema": 2,
+    "memoryMaximumBytes": 4294967296,
+    "networks": [
+      "mainnet"
+    ],
+    "rustToolchain": "nightly-2026-04-02",
+    "wasmBindgenVersion": "0.2.105",
+    "binaryenVersion": "125.0.0",
+    "rustProfile": {
+      "optimizationLevel": 3,
+      "lto": true,
+      "codegenUnits": 1,
+      "panic": "abort",
+      "panicLocations": true
+    },
+    "memoryModes": {
+      "0": "original outer/MSM scheduling and R1 buffer changes with diagnostics",
+      "1": "sequential outer jobs, parallel FFT/MSM windows",
+      "2": "sequential outer jobs and MSM windows, parallel FFT"
+    },
+    "sourcePatchSha256": {
+      "memory-debug-sdk.patch": "9956399fa9a72abfef05ccb392a75b2a19135708bbff362b81a9ac003607acae",
+      "memory-debug-snarkvm.patch": "95f2b076b040767b132deee6913335ec6648bd7f5af8abc6d93722a3c084a06a"
+    },
+    "sourceFreezeSha256": "a488fb2a8a6e96bf2a666cf6d2af4a3aa57fa96328524c3b18c5497ab906195d",
+    "nativeValidationSha256": "25a212f7c4c8eb141073a3e7848925d0d2bd7b06bea3ee2cb9594cb92e2437a5",
+    "parameterMetadataSha256": "49a5b0703a2aaf603b375fe4de7bb2fdfa106b3edfb1302162fa28e16a705f71",
+    "artifacts": {
+      "aleo_wasm.d.ts": {
+        "bytes": 200405,
+        "sha256": "3ea0cd8e59132859cbceccc476b7160f3e5581922e4ca7b335ce86c52393cb29"
+      },
+      "aleo_wasm.wasm": {
+        "bytes": 22568662,
+        "sha256": "b1fe74b6a621f972ed23ed1c090b55390bc20db9cbd60e15e02cc0d876715dc4"
+      },
+      "index.cjs": {
+        "bytes": 548247,
+        "sha256": "329c6e6d94e5a37a572df7d68cba3f62760caa4e6e3ddfcbbef9d6bca9a59f44"
+      },
+      "index.cjs.map": {
+        "bytes": 967340,
+        "sha256": "0c85b0491137b6cdb044a64048c7d90ce2983cadb6aa5744ef20f72e8dddb3c6"
+      },
+      "index.d.cts": {
+        "bytes": 343,
+        "sha256": "0dc0d67582f0371828edd65e36fdfae3548d1834b4229d06a818f954b141daf3"
+      },
+      "index.d.ts": {
+        "bytes": 343,
+        "sha256": "0dc0d67582f0371828edd65e36fdfae3548d1834b4229d06a818f954b141daf3"
+      },
+      "index.js": {
+        "bytes": 542653,
+        "sha256": "eec20ca07f645799fb83cf1ec6bcef60e5ac41abadfaaf080f91f6a576130ee0"
+      },
+      "index.js.map": {
+        "bytes": 964372,
+        "sha256": "88651536633ffa3c205c97660c3b0468b79a3efc8fad5467af8b38c570b43f56"
+      },
+      "worker.d.ts": {
+        "bytes": 10,
+        "sha256": "2e29cd9a98755c46896f7a2d56524db2d6d96b248e36db46de14c30bf47c8d05"
+      },
+      "worker.js": {
+        "bytes": 544747,
+        "sha256": "0e100d9e6390054317ec05ecf43661663baf8f8361573c35307983f1725c0416"
+      },
+      "worker.js.map": {
+        "bytes": 965722,
+        "sha256": "c386e318001b3abd656dc6cc9147686e7a94e563da9fdb616474b1a96bb06c2e"
+      }
+    },
+    "buildElapsedSeconds": 443.443,
+    "builtAt": "2026-10-14T19:54:47.044444+00:00",
+    "validation": {
+      "nativeTestsPassed": 27,
+      "nativeClippy": "passed -D warnings with native filesystem feature",
+      "browserSmoke": {
+        "outcome": "smoke-passed",
+        "threads": 6,
+        "report": "dist/proving-lab-srs-412-smoke/result-2026-10-14T19-54-50-187Z-baseline-6.json",
+        "reportSha256": "3044794349ff9abc67c221aed64e8342e5b6083b9db6d3cd02940af306d25542"
+      },
+      "browserMainnet": {
+        "builtAndSdkVerified": 3,
+        "threads": 6,
+        "modes": [
+          0
+        ],
+        "fees": [
+          "public",
+          "private"
+        ],
+        "coldAndWarmPublicCache": true,
+        "warmPrivateFeeCache": true,
+        "broadcast": false
+      },
+      "broadcast": false
+    },
+    "limits": [
+      "Full release and compiler change; not an isolated benchmark of the SRS-sharing commit.",
+      "Cold keys share SRS snapshots; deserialized keys own their points."
+    ],
+    "buildLogSha256": "722c6e7785245a42c7c4c4c13d2e1bd67d0b66f1b1e13f1bebd86b4918ffbe55",
+    "browserResultsSha256": "6b76dc6d2483684a3941b06b9feeccef4c0c0568f9c80d5ade6fd14e83cd3d00"
+  },
+  "mainnet-single64-initial-functional": {
+    "diagnosticBuild": "wasm64-single",
+    "sdkVersion": "0.12.1",
+    "snarkvmVersion": "4.12.0",
+    "sdkRevision": "6fca0da897ce85baff3890d287ebfc7d9b518ffa",
+    "snarkvmRevision": "56b6c6025c96cc1e36aacdb8edc008a910f8ba9e",
+    "target": "wasm64-unknown-unknown",
+    "pointerBytes": 8,
+    "counterWordBytes": 8,
+    "counterSchema": 3,
+    "sharedMemory": false,
+    "threads": 1,
+    "maximumBytes": 8589934592,
+    "toolchain": "nightly-2026-04-02",
+    "wasmBindgen": "0.2.129",
+    "binaryen": "125",
+    "profile": {
+      "optLevel": 3,
+      "lto": true,
+      "codegenUnits": 1,
+      "panic": "abort"
+    },
+    "cargoLockSha256": "39fae290adeb0f1884cc2582ab29b548f3ec34f7f4a802977dcab6e764b507c4",
+    "buildScriptSha256": "1b6808c28a74a41c63e671e4588562db359d7ca57105761db63b4ad2ead4bdd7",
+    "elapsedMs": 359481,
+    "artifacts": {
+      "aleo_wasm.wasm": {
+        "bytes": 21129258,
+        "sha256": "465356d6199b7cb9f24b2272af238ce97439f40aa6e9446730a6f611135aadcd"
+      },
+      "aleo_wasm.js": {
+        "bytes": 536744,
+        "sha256": "a3e6cfeba2ca0e171cd5b9ef592e32f2ff2b1366d8a6619d89d1e4bae85ee512"
+      },
+      "index.js": {
+        "bytes": 406,
+        "sha256": "1714d56861d174595895d85ad267f7c11c7a401a1e7b9d3804234bb6b1a82a33"
+      },
+      "worker.js": {
+        "bytes": 80,
+        "sha256": "7ef4c5724ee92b2f049d79c209a3a339cee04d05266c7e1f5d49bedc4d04e40f"
+      }
+    }
+  }
+}
