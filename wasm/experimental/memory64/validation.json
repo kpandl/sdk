@@ -1,0 +1,209 @@
+{
+  "localOnly": true,
+  "broadcast": false,
+  "browserSmokes": {
+    "wasm64-smoke": {
+      "report": "dist/proving-lab-wasm64-smoke/result-2026-10-14T20-42-50-529Z-baseline-1.json",
+      "outcome": "smoke-passed",
+      "artifacts": {
+        "sha256": "465356d6199b7cb9f24b2272af238ce97439f40aa6e9446730a6f611135aadcd",
+        "sdkBrowserSha256": "c852c5fe821c3a26d0ceb65d88f10cb085d320bbb1f17e6d1ec4b0852bcb7da9",
+        "workerBundleSha256": "287b02770a3351e6410bd2b15c23f423c51bd81682998ea026920dc6d8a9716b",
+        "instrumentedRayonWorkerSha256": "7ef4c5724ee92b2f049d79c209a3a339cee04d05266c7e1f5d49bedc4d04e40f"
+      },
+      "result": {
+        "type": "lab-result",
+        "ok": true,
+        "smoke": true,
+        "threadPoolInitialized": false,
+        "singleThread": true,
+        "pointerBytes": 8,
+        "allocationCounterObserved": true,
+        "allocatedBytesRecovered": true,
+        "liveBytesBefore": 14419,
+        "liveBytesDuring": 28755,
+        "liveBytesAfter": 14419,
+        "broadcast": false
+      }
+    },
+    "wasm64-final-smoke": {
+      "report": "dist/proving-lab-wasm64-final-smoke/result-2026-10-14T21-11-22-961Z-baseline-1.json",
+      "outcome": "smoke-passed",
+      "artifacts": {
+        "sha256": "1c6aad7a0d3f2bce0b02543f47b31674c1f5bcce0d5e4824b538a8f03cab5270",
+        "sdkBrowserSha256": "c852c5fe821c3a26d0ceb65d88f10cb085d320bbb1f17e6d1ec4b0852bcb7da9",
+        "workerBundleSha256": "23f325c4a9081a29d519d97451563b91b164dd3ce3cff12edfd0d9ded7c39c0b",
+        "instrumentedRayonWorkerSha256": "7ef4c5724ee92b2f049d79c209a3a339cee04d05266c7e1f5d49bedc4d04e40f"
+      },
+      "result": {
+        "type": "lab-result",
+        "ok": true,
+        "smoke": true,
+        "threadPoolInitialized": false,
+        "singleThread": true,
+        "pointerBytes": 8,
+        "allocationCounterObserved": true,
+        "allocatedBytesRecovered": true,
+        "liveBytesBefore": 14419,
+        "liveBytesDuring": 28755,
+        "liveBytesAfter": 14419,
+        "broadcast": false
+      }
+    },
+    "wasm32-single-smoke": {
+      "report": "dist/proving-lab-wasm32-single-smoke/result-2026-10-14T21-11-22-884Z-baseline-1.json",
+      "outcome": "smoke-passed",
+      "artifacts": {
+        "sha256": "b8d69f9e670ace2a26339a5f8eaa421cfb1e16099ef0005399bc00857aec7fb8",
+        "sdkBrowserSha256": "c852c5fe821c3a26d0ceb65d88f10cb085d320bbb1f17e6d1ec4b0852bcb7da9",
+        "workerBundleSha256": "23f325c4a9081a29d519d97451563b91b164dd3ce3cff12edfd0d9ded7c39c0b",
+        "instrumentedRayonWorkerSha256": "7ef4c5724ee92b2f049d79c209a3a339cee04d05266c7e1f5d49bedc4d04e40f"
+      },
+      "result": {
+        "type": "lab-result",
+        "ok": true,
+        "smoke": true,
+        "threadPoolInitialized": false,
+        "singleThread": true,
+        "pointerBytes": 4,
+        "allocationCounterObserved": true,
+        "allocatedBytesRecovered": true,
+        "liveBytesBefore": 12199,
+        "liveBytesDuring": 24487,
+        "liveBytesAfter": 12199,
+        "broadcast": false
+      }
+    },
+    "wasm64-threads-smoke": {
+      "report": "dist/proving-lab-wasm64-threads-smoke/result-2026-10-14T21-20-44-661Z-baseline-6.json",
+      "outcome": "smoke-passed",
+      "artifacts": {
+        "sha256": "7dbf50d3c2677364924ebe40bba82e636a61bc5ebce48d16d72d8573c2b9bd39",
+        "sdkBrowserSha256": "c852c5fe821c3a26d0ceb65d88f10cb085d320bbb1f17e6d1ec4b0852bcb7da9",
+        "workerBundleSha256": "23f325c4a9081a29d519d97451563b91b164dd3ce3cff12edfd0d9ded7c39c0b",
+        "instrumentedRayonWorkerSha256": "bc1fbd733fa3b979d75f560a39d6b278f80ba6998f7f87236378c5105f41e36c"
+      },
+      "result": {
+        "type": "lab-result",
+        "ok": true,
+        "smoke": true,
+        "threadPoolInitialized": true,
+        "singleThread": false,
+        "pointerBytes": 8,
+        "allocationCounterObserved": true,
+        "allocatedBytesRecovered": true,
+        "liveBytesBefore": 12672211,
+        "liveBytesDuring": 12686547,
+        "liveBytesAfter": 12672211,
+        "broadcast": false
+      }
+    },
+    "memory-observer-regression": {
+      "report": "dist/proving-lab-memory-observer-regression/result-2026-10-14T20-52-46-675Z-baseline-6.json",
+      "outcome": "smoke-passed",
+      "artifacts": {
+        "sha256": "0fc59734daafa8dd1561c5ea5f259495d6b5ff7cb27420a4739b70863f837768",
+        "sdkBrowserSha256": "c852c5fe821c3a26d0ceb65d88f10cb085d320bbb1f17e6d1ec4b0852bcb7da9",
+        "workerBundleSha256": "287b02770a3351e6410bd2b15c23f423c51bd81682998ea026920dc6d8a9716b",
+        "instrumentedRayonWorkerSha256": "8f267b75fb228b207c865b6413bae0e63f072137d54aaca57fa80fb6e646fe5c"
+      },
+      "result": {
+        "type": "lab-result",
+        "ok": true,
+        "smoke": true,
+        "threadPoolInitialized": true,
+        "singleThread": false,
+        "pointerBytes": 4,
+        "allocationCounterObserved": true,
+        "allocatedBytesRecovered": true,
+        "liveBytesBefore": 12640971,
+        "liveBytesDuring": 12653259,
+        "liveBytesAfter": 12640971,
+        "broadcast": false
+      }
+    }
+  },
+  "rustMemory64ThreadRuntime": {
+    "ok": true,
+    "pointerBytes": 8,
+    "memoryBytes": 4299489280,
+    "rootBefore": 0,
+    "rootAfter": 11,
+    "tlsBases": [
+      4295098384,
+      4297196688,
+      4299293952
+    ],
+    "children": [
+      {
+        "ok": true,
+        "value": 22,
+        "before": 0,
+        "after": 22,
+        "tlsBase": 4297196688,
+        "stackAllocation": 4295099520,
+        "roundtrips": 1000
+      },
+      {
+        "ok": true,
+        "value": 33,
+        "before": 0,
+        "after": 33,
+        "tlsBase": 4299293952,
+        "stackAllocation": 4297196784,
+        "roundtrips": 1000
+      }
+    ],
+    "browserVersion": "148.0.7778.96",
+    "context": "mv3-offscreen-workers",
+    "runtimeFlags": []
+  },
+  "checks": {
+    "labUnitTests": {
+      "command": "node --test scripts/proving-lab/{http-read,memory-counters,phase-profile}.test.mjs",
+      "passed": 8
+    },
+    "snarkvmUtilitiesCheck": {
+      "passed": true,
+      "log": "dist/proving-lab-wasm64/snarkvm-utilities-check.log"
+    },
+    "snarkvmUtilitiesClippy": {
+      "passed": true,
+      "warningsAreErrors": true,
+      "log": "dist/proving-lab-wasm64/snarkvm-utilities-clippy.log"
+    },
+    "snarkvmUtilitiesTargetedTests": {
+      "passed": 2,
+      "log": "dist/proving-lab-wasm64/snarkvm-utilities-tests.log"
+    },
+    "wasmBindgenThreadTransformTests": {
+      "passed": 2,
+      "log": "dist/proving-lab-wasm64/bindgen-tests.log"
+    },
+    "wasmBindgenClippy": {
+      "passed": true,
+      "warningsAreErrors": true,
+      "log": "dist/proving-lab-wasm64/bindgen-clippy.log"
+    },
+    "sdkFormatting": {
+      "passed": true,
+      "log": "dist/proving-lab-wasm64/sdk-format-final.log"
+    },
+    "snarkvmFormatting": {
+      "passed": true,
+      "log": "dist/proving-lab-wasm64/snarkvm-format-final.log"
+    },
+    "wasmBindgenFormatting": {
+      "passed": true,
+      "log": "dist/proving-lab-wasm64/bindgen-format-final.log"
+    }
+  },
+  "packagingChecks": {
+    "nodeSyntax": "passed",
+    "freshPrepareOnly": "passed",
+    "repeatPrepareOnly": "passed",
+    "pinnedSourcePatchesVerified": 3,
+    "patchedDependencyFilesComparedToMeasuredPrototype": 32,
+    "freshFullProofAfterPackaging": false
+  }
+}

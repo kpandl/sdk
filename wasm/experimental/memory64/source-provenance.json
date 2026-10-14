@@ -1,0 +1,23 @@
+{
+  "sdk": {
+    "revision": "6fca0da897ce85baff3890d287ebfc7d9b518ffa",
+    "patchSha256": "a835c04016e93cdfb3b583784fbba8af425488c9115dee3871e40b8aee4cd26f"
+  },
+  "snarkvm": {
+    "revision": "56b6c6025c96cc1e36aacdb8edc008a910f8ba9e",
+    "patchSha256": "947a8b32a7c5a67d910a30df39cb30033db81b6336ff1dc9af09c3cdf436245b"
+  },
+  "wasm-bindgen": {
+    "revision": "165586f854c852bcbc4d14d8a75a0a0e0d0abc12",
+    "patchSha256": "b94ee76629663f3d94c366ae6e5c86f74f6a2c475a6baf496642aec563db824a",
+    "cliSha256": "547876abe3b831eea273710ed7637ab312426b12186df12b7ff7e4c02110ebb3",
+    "cliBytes": 6553344
+  },
+  "limits": {
+    "localOnly": true,
+    "broadcast": false,
+    "experimentalMaximumLinearBytes": 8589934592,
+    "allocatorCounterSchema": 3,
+    "bindingPointerAbi": "f64 for usize, i64 for raw memory addresses"
+  }
+}
