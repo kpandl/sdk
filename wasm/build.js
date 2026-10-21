@@ -1,6 +1,7 @@
 import * as $fs from "node:fs/promises";
 import * as $os from "node:os";
 import * as $path from "node:path";
+import { fileURLToPath } from "node:url";
 import { rollup } from "rollup";
 import virtual from "@rollup/plugin-virtual";
 import rust from "@wasm-tool/rollup-plugin-rust";
@@ -18,6 +19,9 @@ async function buildRollup(input, output) {
 }
 
 const isDebugBuild = process.env.BUILD_DEBUG === "1";
+// `wasm-opt` on PATH can resolve to the Memory64 build's Binaryen 125. Keep
+// wasm32 on its own Binaryen 120.
+process.env.WASM_OPT_BIN ??= fileURLToPath(import.meta.resolve("binaryen/bin/wasm-opt"));
 
 // Panic locations (kept below) embed absolute source paths for dependencies
 // and the rebuilt std, which would publish the builder's home directory and
@@ -40,9 +44,22 @@ async function buildWasm(network) {
                     cargo: [
                         "--no-default-features",
                         "--features", `browser,${network}`,
+                        // On a toolchain newer than nightly-2025-10-04 the
+                        // plugin sets `profile.release.panic="immediate-abort"`
+                        // (plus `-Z panic-immediate-abort`), which drops every
+                        // panic string and defeats the panic hook installed in
+                        // wasm/src/lib.rs. The plugin appends `extraArgs.cargo`
+                        // after its own `--config` values and cargo lets the
+                        // last one win, so this restores the ordinary `abort`
+                        // strategy. See also the `optimize.strip` note below.
+                        "--config", 'profile.release.panic="abort"',
                     ],
                     rustc: [
                         "-C", "link-arg=--max-memory=4294967296",
+                        // Rust nightlies from 2025-10 onward no longer export
+                        // `__heap_base` implicitly; wasm-bindgen needs it to
+                        // inject the thread id for the multi-threaded build.
+                        "-C", "link-arg=--export=__heap_base",
                         ...remapPathPrefixes,
                     ],
                     wasmOpt: ["-O", "--enable-threads", "--enable-bulk-memory", "--enable-bulk-memory-opt", "--enable-nontrapping-float-to-int"],
@@ -55,10 +72,9 @@ async function buildWasm(network) {
                 // `RuntimeError: unreachable` into
                 // `panicked at src/...:N:M: ... Err value: "<detail>"` for
                 // ~+1.1% binary size (+0.22 MB per network, measured).
-                // NOTE: a toolchain newer than nightly-2025-10-04 makes the
-                // plugin enable `-Z panic-immediate-abort`, which removes
-                // panic strings entirely and silently undoes this — revisit
-                // when bumping rust-toolchain.toml.
+                // NOTE: the `profile.release.panic="abort"` override in
+                // `extraArgs.cargo` above keeps this working on newer
+                // toolchains.
                 optimize: isDebugBuild
                     ? { release: false, wasmOpt: false, rustc: false }
                     : {
